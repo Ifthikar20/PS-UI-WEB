@@ -4,6 +4,9 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
+    "dev:all": "./dev.sh all",
+    "dev:web": "./dev.sh web",
+    "dev:backend": "./dev.sh backend",
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
