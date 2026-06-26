@@ -1,6 +1,9 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   reactStrictMode: true,
+  // Django paths are slash-terminated; let "/api/proxy/foo/" reach the catch-all
+  // route handler directly instead of issuing a 308 trailing-slash redirect.
+  skipTrailingSlashRedirect: true,
   // Security headers applied to every response.
   async headers() {
     return [

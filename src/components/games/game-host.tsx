@@ -100,10 +100,12 @@ export function GameHost({
           break;
         }
         case "reward":
+          // The SDK reward reason is free-text; map it to a valid client-
+          // reportable reason (the server recomputes and caps the points).
           api
             .post("rewards/activity/", {
-              reason: data.reason || "Game play",
-              context: { gameKey: game.key },
+              reason: "Super Dash checkpoint",
+              context: { gameKey: game.key, reason: String(data.reason ?? "") },
             })
             .catch(() => {});
           break;

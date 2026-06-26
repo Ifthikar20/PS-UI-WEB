@@ -44,8 +44,9 @@ export function Quiz({
       // Award completion server-side (server recomputes points).
       api
         .post("rewards/activity/", {
+          // Backend scores "Finished a quiz" on context.score (capped at 10).
           reason: "Finished a quiz",
-          context: { studySetId, correct: correct, total },
+          context: { studySetId, score: correct, total },
         })
         .catch(() => {});
       return;
