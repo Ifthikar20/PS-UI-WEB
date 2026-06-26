@@ -63,6 +63,8 @@ start_backend() {
   pip install -q -r requirements.txt
   echo "  applying migrations…"
   python manage.py migrate --noinput
+  echo "  seeding demo login credentials…"
+  python manage.py seed_demo || echo "  (seed_demo unavailable — skipping)"
   echo "→ Backend: http://localhost:$BACKEND_PORT"
   python manage.py runserver "0.0.0.0:$BACKEND_PORT" &
   PIDS+=("$!")

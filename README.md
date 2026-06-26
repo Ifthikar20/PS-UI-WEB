@@ -41,6 +41,19 @@ npm install
 npm run dev                  # http://localhost:3000
 ```
 
+## Demo login
+
+`./dev.sh` seeds demo accounts in the backend (via `manage.py seed_demo`). Sign
+in with any of:
+
+| Email | Password |
+| --- | --- |
+| `demo@playstudy.app` | `Playstudy123!` |
+| `student@playstudy.app` | `Playstudy123!` |
+| `parent@playstudy.app` | `Playstudy123!` |
+
+Or create your own: `python manage.py seed_demo --email you@example.com --password "Secret123!" --name "You"`.
+
 ## Scripts
 
 - `npm run dev` — dev server
