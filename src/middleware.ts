@@ -8,6 +8,7 @@ import {
 /** Paths that require an authenticated session. */
 const PROTECTED = [
   "/dashboard",
+  "/onboarding",
   "/library",
   "/study",
   "/games",

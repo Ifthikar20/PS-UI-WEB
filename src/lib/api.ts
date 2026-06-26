@@ -101,6 +101,11 @@ export const auth = {
       method: "POST",
       body: { email, password, name },
     }),
+  provider: (provider: "google" | "apple", idToken: string) =>
+    request<{ user: unknown }>("/api/auth/provider", {
+      method: "POST",
+      body: { provider, idToken },
+    }),
   logout: () => request<{ ok: boolean }>("/api/auth/logout", { method: "POST" }),
   session: () => request<any>("/api/auth/session"),
 };

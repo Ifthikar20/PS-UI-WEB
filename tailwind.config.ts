@@ -40,9 +40,19 @@ const config: Config = {
           DEFAULT: "hsl(var(--accent))",
           foreground: "hsl(var(--accent-foreground))",
         },
+        accent2: {
+          DEFAULT: "hsl(var(--accent-2))",
+          foreground: "hsl(var(--accent-2-foreground))",
+        },
+        success: "hsl(var(--success))",
+        canvas: "hsl(var(--canvas))",
         card: {
           DEFAULT: "hsl(var(--card))",
           foreground: "hsl(var(--card-foreground))",
+        },
+        popover: {
+          DEFAULT: "hsl(var(--popover))",
+          foreground: "hsl(var(--popover-foreground))",
         },
         // Pastel tile accents carried over from the mobile design system.
         pastel: {
