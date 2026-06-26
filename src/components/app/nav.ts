@@ -1,0 +1,18 @@
+import {
+  LayoutDashboard,
+  Library,
+  Gamepad2,
+  CalendarCheck,
+  Trophy,
+  type LucideIcon,
+} from "lucide-react";
+
+export type NavItem = { label: string; href: string; icon: LucideIcon };
+
+export const NAV_ITEMS: NavItem[] = [
+  { label: "Dashboard", href: "/dashboard", icon: LayoutDashboard },
+  { label: "Library", href: "/library", icon: Library },
+  { label: "Games", href: "/games", icon: Gamepad2 },
+  { label: "Exam Prep", href: "/exam", icon: CalendarCheck },
+  { label: "Rewards", href: "/rewards", icon: Trophy },
+];
