@@ -146,7 +146,7 @@ export function GameHost({
           <span className="text-sm font-semibold">Game over 🎉</span>
         )}
       </div>
-      <div className="aspect-[3/4] w-full overflow-hidden rounded-xl border bg-black sm:aspect-video">
+      <div className="h-[78vh] min-h-[560px] w-full overflow-hidden rounded-2xl border bg-black">
         <iframe
           ref={iframeRef}
           src={src}

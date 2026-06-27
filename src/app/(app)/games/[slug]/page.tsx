@@ -10,7 +10,7 @@ import { asList } from "@/lib/use-api";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { GameHost } from "@/components/games/game-host";
-import type { GameManifestEntry, StudySet } from "@/lib/types";
+import type { GameManifestEntry, StudySet, Paginated } from "@/lib/types";
 
 const GAMES_BASE_URL =
   process.env.NEXT_PUBLIC_GAMES_BASE_URL ?? "http://localhost:8000";
@@ -43,13 +43,24 @@ export default function GameDetailPage({
           return;
         }
         setGame(found);
-        if (setId) {
-          try {
-            const set = await api.get<StudySet>(`studysets/${setId}/`);
-            if (!cancelled) setStudySet(set);
-          } catch {
-            /* play without a study set */
+        // Load the chosen study set, or fall back to the most recent ready
+        // one so the game always launches with real questions to play.
+        try {
+          let set: StudySet | null = null;
+          if (setId) {
+            set = await api.get<StudySet>(`studysets/${setId}/`);
+          } else {
+            const sets = await api.get<Paginated<StudySet>>(
+              "studysets/?status=ready",
+            );
+            const ready = (sets.results ?? []).find(
+              (s) => s.status === "ready" && (s.quiz?.length || s.wordGame?.length),
+            );
+            if (ready) set = await api.get<StudySet>(`studysets/${ready.id}/`);
           }
+          if (!cancelled && set) setStudySet(set);
+        } catch {
+          /* play without a study set */
         }
       } catch {
         if (!cancelled) setError("Failed to load game.");
@@ -63,7 +74,7 @@ export default function GameDetailPage({
   }, [slug, setId]);
 
   return (
-    <div className="mx-auto max-w-3xl space-y-4">
+    <div className="mx-auto max-w-5xl space-y-4">
       <Button variant="ghost" size="sm" asChild className="-ml-2 w-fit">
         <Link href="/games">
           <ArrowLeft className="h-4 w-4" /> Back to games
@@ -71,7 +82,7 @@ export default function GameDetailPage({
       </Button>
 
       {loading ? (
-        <Skeleton className="aspect-video w-full" />
+        <Skeleton className="h-[78vh] min-h-[560px] w-full" />
       ) : error ? (
         <p className="text-sm text-destructive">{error}</p>
       ) : game ? (
