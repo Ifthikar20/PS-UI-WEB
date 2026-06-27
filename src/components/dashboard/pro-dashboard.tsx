@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { Plus, FileText, Trophy, Flame, Star, ChevronRight } from "lucide-react";
 import { useSession } from "@/components/app/session-provider";
-import { useApi } from "@/lib/use-api";
+import { useApi, asList } from "@/lib/use-api";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
@@ -16,7 +16,7 @@ import {
   SectionHeader,
   CardGridSkeleton,
 } from "./shared";
-import type { Paginated, ExamPlan } from "@/lib/types";
+import type { Paginated, ExamPlan, GameManifestEntry } from "@/lib/types";
 
 /** University & above flavor: refined, dense, professional. */
 export function ProDashboard() {
@@ -25,7 +25,7 @@ export function ProDashboard() {
   const exams = useApi<Paginated<ExamPlan>>("examplans/");
   const rewards = me?.rewards;
   const recent = sets.data?.results?.slice(0, 6) ?? [];
-  const gameList = games.data?.results?.slice(0, 4) ?? [];
+  const gameList = asList<GameManifestEntry>(games.data).slice(0, 4);
   const nextExam = exams.data?.results?.[0];
 
   return (

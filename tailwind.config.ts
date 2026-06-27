@@ -70,6 +70,8 @@ const config: Config = {
       },
       fontFamily: {
         sans: ["var(--font-inter)", "system-ui", "sans-serif"],
+        serif: ["var(--font-serif)", "Georgia", "serif"],
+        notes: ["var(--font-notes)", "Comic Sans MS", "cursive"],
       },
       keyframes: {
         "accordion-down": {

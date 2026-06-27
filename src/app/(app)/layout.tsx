@@ -29,21 +29,16 @@ export default async function AppLayout({
   return (
     <SessionProvider initial={me}>
       <FlavorProvider initial={flavor}>
-        {/* Gray canvas behind the card-shaped app frame (Airbnb style). */}
-        <div
-          data-flavor={flavor}
-          className="min-h-screen bg-canvas lg:p-4"
-        >
-          <div className="mx-auto flex min-h-screen max-w-[1600px] overflow-hidden border bg-background shadow-sm lg:min-h-[calc(100vh-2rem)] lg:rounded-3xl">
-            <Sidebar />
-            <div className="flex min-w-0 flex-1 flex-col">
-              <Topbar />
-              <main className="flex-1 px-4 pb-24 pt-6 md:px-8 lg:pb-10">
-                {children}
-              </main>
-            </div>
-            <MobileNav />
+        {/* Full-bleed dashboard: sidebar + content fill the viewport. */}
+        <div data-flavor={flavor} className="flex min-h-screen bg-background">
+          <Sidebar />
+          <div className="flex min-w-0 flex-1 flex-col">
+            <Topbar />
+            <main className="flex-1 px-4 pb-24 pt-6 md:px-8 lg:pb-10">
+              {children}
+            </main>
           </div>
+          <MobileNav />
         </div>
       </FlavorProvider>
     </SessionProvider>

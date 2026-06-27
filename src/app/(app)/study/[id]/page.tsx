@@ -3,15 +3,50 @@
 import * as React from "react";
 import { use } from "react";
 import Link from "next/link";
-import { ArrowLeft, Gamepad2 } from "lucide-react";
+import { ArrowLeft, Gamepad2, Check } from "lucide-react";
 import { useApi } from "@/lib/use-api";
+import { useReading, FONT_CLASS, SIZE_CLASS } from "@/lib/reading";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Badge } from "@/components/ui/badge";
+import { cn } from "@/lib/utils";
 import { Quiz } from "@/components/study/quiz";
-import type { StudySet } from "@/lib/types";
+import { Markdown } from "@/components/study/markdown";
+import { ReaderToolbar } from "@/components/study/reader-toolbar";
+import { LearningTree } from "@/components/study/learning-tree";
+import type { StudySet, StudySection } from "@/lib/types";
+
+function useProgress(id: string, count: number) {
+  const key = `ps_progress_${id}`;
+  const [done, setDone] = React.useState<Set<number>>(new Set());
+  React.useEffect(() => {
+    try {
+      const raw = localStorage.getItem(key);
+      if (raw) setDone(new Set(JSON.parse(raw)));
+    } catch {
+      /* ignore */
+    }
+  }, [key]);
+  const toggle = React.useCallback(
+    (i: number) => {
+      setDone((prev) => {
+        const next = new Set(prev);
+        if (next.has(i)) next.delete(i);
+        else next.add(i);
+        localStorage.setItem(key, JSON.stringify([...next]));
+        return next;
+      });
+    },
+    [key],
+  );
+  const current = React.useMemo(() => {
+    for (let i = 0; i < count; i++) if (!done.has(i)) return i;
+    return undefined;
+  }, [done, count]);
+  return { done, toggle, current };
+}
 
 export default function StudySetPage({
   params,
@@ -20,6 +55,13 @@ export default function StudySetPage({
 }) {
   const { id } = use(params);
   const { data: set, loading, error } = useApi<StudySet>(`studysets/${id}/`);
+  const reading = useReading();
+
+  const sections: StudySection[] = React.useMemo(
+    () => [...(set?.sections ?? [])].sort((a, b) => a.order - b.order),
+    [set],
+  );
+  const { done, toggle, current } = useProgress(id, sections.length);
 
   if (loading) {
     return (
@@ -68,34 +110,70 @@ export default function StudySetPage({
       <Tabs defaultValue="read">
         <TabsList>
           <TabsTrigger value="read">Read</TabsTrigger>
+          <TabsTrigger value="path">Path</TabsTrigger>
           <TabsTrigger value="quiz">Quiz ({set.quiz?.length ?? 0})</TabsTrigger>
         </TabsList>
 
         <TabsContent value="read" className="space-y-4">
+          <ReaderToolbar {...reading} />
+
           {set.summary && (
             <Card>
               <CardContent className="p-6">
                 <h2 className="mb-2 font-semibold">Summary</h2>
-                <p className="text-sm leading-relaxed text-muted-foreground">
-                  {set.summary}
-                </p>
+                <Markdown
+                  content={set.summary}
+                  className={cn(
+                    FONT_CLASS[reading.font],
+                    SIZE_CLASS[reading.size],
+                    "text-foreground/90",
+                  )}
+                />
               </CardContent>
             </Card>
           )}
-          {[...(set.sections ?? [])]
-            .sort((a, b) => a.order - b.order)
-            .map((section, i) => (
-              <Card key={i}>
+
+          {sections.map((section, i) => {
+            const isDone = done.has(i);
+            return (
+              <Card key={i} className={cn(isDone && "border-green-500/40")}>
                 <CardContent className="p-6">
-                  <h2 className="mb-3 text-lg font-semibold">
-                    {section.title}
-                  </h2>
-                  <div className="whitespace-pre-wrap text-sm leading-relaxed text-foreground/90">
-                    {section.content}
+                  <div className="mb-3 flex items-center justify-between gap-3">
+                    <h2 className="text-lg font-semibold">{section.title}</h2>
+                    <Button
+                      size="sm"
+                      variant={isDone ? "secondary" : "outline"}
+                      onClick={() => toggle(i)}
+                    >
+                      <Check className="h-4 w-4" />
+                      {isDone ? "Completed" : "Mark complete"}
+                    </Button>
                   </div>
+                  <Markdown
+                    content={section.content}
+                    className={cn(
+                      FONT_CLASS[reading.font],
+                      SIZE_CLASS[reading.size],
+                      "text-foreground/90",
+                    )}
+                  />
                 </CardContent>
               </Card>
-            ))}
+            );
+          })}
+        </TabsContent>
+
+        <TabsContent value="path">
+          <Card>
+            <CardContent className="p-6">
+              <LearningTree
+                sections={sections}
+                completed={done}
+                current={current}
+                onSelect={toggle}
+              />
+            </CardContent>
+          </Card>
         </TabsContent>
 
         <TabsContent value="quiz">

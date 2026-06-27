@@ -3,6 +3,13 @@
 import * as React from "react";
 import { api, ApiError } from "./api";
 
+/** Normalize an endpoint that may return a bare array OR a paginated object. */
+export function asList<T>(data: unknown): T[] {
+  if (Array.isArray(data)) return data as T[];
+  const results = (data as { results?: unknown } | null)?.results;
+  return Array.isArray(results) ? (results as T[]) : [];
+}
+
 type State<T> = {
   data: T | null;
   loading: boolean;

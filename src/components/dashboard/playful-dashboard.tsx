@@ -3,6 +3,8 @@
 import Link from "next/link";
 import { Plus, FileText, Flame, Star, Sparkles } from "lucide-react";
 import { useSession } from "@/components/app/session-provider";
+import { asList } from "@/lib/use-api";
+import type { GameManifestEntry } from "@/lib/types";
 import { Pip } from "@/components/pip";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -23,7 +25,7 @@ export function PlayfulDashboard() {
   const { sets, games } = useDashboardData();
   const rewards = me?.rewards;
   const recent = sets.data?.results?.slice(0, 4) ?? [];
-  const gameList = games.data?.results?.slice(0, 6) ?? [];
+  const gameList = asList<GameManifestEntry>(games.data).slice(0, 6);
 
   return (
     <div className="mx-auto max-w-6xl space-y-8">

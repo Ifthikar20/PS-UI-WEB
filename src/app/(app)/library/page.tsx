@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { FileText, Plus } from "lucide-react";
-import { useApi } from "@/lib/use-api";
+import { useApi, asList } from "@/lib/use-api";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -13,9 +13,9 @@ import type { Paginated, StudySet, GameManifestEntry } from "@/lib/types";
 
 export default function LibraryPage() {
   const sets = useApi<Paginated<StudySet>>("studysets/");
-  const games = useApi<Paginated<GameManifestEntry>>("games/");
+  const games = useApi<GameManifestEntry[]>("games/");
   const setList = sets.data?.results ?? [];
-  const gameList = games.data?.results ?? [];
+  const gameList = asList<GameManifestEntry>(games.data);
 
   return (
     <div className="mx-auto max-w-6xl space-y-6">

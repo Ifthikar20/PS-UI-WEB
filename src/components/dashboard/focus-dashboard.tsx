@@ -3,6 +3,8 @@
 import Link from "next/link";
 import { Plus, FileText, Trophy, Flame, Star } from "lucide-react";
 import { useSession } from "@/components/app/session-provider";
+import { asList } from "@/lib/use-api";
+import type { GameManifestEntry } from "@/lib/types";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
@@ -10,6 +12,7 @@ import { StudySetCard } from "@/components/app/study-set-card";
 import { GameCard } from "@/components/app/game-card";
 import { EmptyState } from "@/components/app/empty-state";
 import { StudyTimer } from "./study-timer";
+import { DashboardLearningPath } from "./learning-path";
 import {
   useDashboardData,
   greeting,
@@ -24,7 +27,10 @@ export function FocusDashboard() {
   const { sets, games } = useDashboardData();
   const rewards = me?.rewards;
   const recent = sets.data?.results?.slice(0, 4) ?? [];
-  const gameList = games.data?.results?.slice(0, 5) ?? [];
+  const gameList = asList<GameManifestEntry>(games.data).slice(0, 5);
+  const pathSet = sets.data?.results?.find(
+    (s) => s.status === "ready" && (s.sections?.length ?? 0) > 0,
+  );
 
   return (
     <div className="mx-auto max-w-6xl space-y-8">
@@ -84,6 +90,8 @@ export function FocusDashboard() {
           </CardContent>
         </Card>
       )}
+
+      {pathSet && <DashboardLearningPath set={pathSet} />}
 
       <section>
         <SectionHeader title="Recent study sets" href="/library" cta="View all" />

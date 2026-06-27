@@ -30,6 +30,12 @@ export function middleware(req: NextRequest) {
   // Gate protected app routes.
   if (PROTECTED.some((p) => pathname.startsWith(p)) && !hasSession) {
     const url = req.nextUrl.clone();
+    // Dev convenience: auto-login as the demo user instead of showing /login.
+    if (process.env.DEV_AUTOLOGIN === "1") {
+      url.pathname = "/api/auth/dev-login";
+      url.searchParams.set("next", pathname);
+      return NextResponse.redirect(url);
+    }
     url.pathname = "/login";
     url.searchParams.set("next", pathname);
     return NextResponse.redirect(url);

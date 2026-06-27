@@ -6,10 +6,11 @@ import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { ArrowLeft } from "lucide-react";
 import { api } from "@/lib/api";
+import { asList } from "@/lib/use-api";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { GameHost } from "@/components/games/game-host";
-import type { Paginated, GameManifestEntry, StudySet } from "@/lib/types";
+import type { GameManifestEntry, StudySet } from "@/lib/types";
 
 const GAMES_BASE_URL =
   process.env.NEXT_PUBLIC_GAMES_BASE_URL ?? "http://localhost:8000";
@@ -32,9 +33,9 @@ export default function GameDetailPage({
     let cancelled = false;
     (async () => {
       try {
-        const manifest = await api.get<Paginated<GameManifestEntry>>("games/");
+        const manifest = await api.get<GameManifestEntry[]>("games/");
         const found =
-          manifest.results.find((g) => g.slug === slug) ?? null;
+          asList<GameManifestEntry>(manifest).find((g) => g.slug === slug) ?? null;
         if (cancelled) return;
         if (!found) {
           setError("Game not found.");

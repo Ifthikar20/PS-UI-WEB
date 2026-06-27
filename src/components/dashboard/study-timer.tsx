@@ -1,24 +1,26 @@
 "use client";
 
 import * as React from "react";
-import { Play, Pause, RotateCcw } from "lucide-react";
+import { Play, Pause, RotateCcw, Timer, ChevronDown } from "lucide-react";
 import { api } from "@/lib/api";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
+import { Card } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
 
 const PRESETS = [25, 50] as const;
 const BREAK_MINUTES = 5;
 
 /**
- * Pomodoro-style study timer pinned to the top of the Focus / Rose dashboards.
- * On finishing a focus block it records a study-session reward server-side.
+ * Compact, collapsible Pomodoro study timer pinned to the top of the dashboard.
+ * Collapsed: a slim bar (time + start/pause). Expanded: ring + presets + reset.
+ * Finishing a focus block records a study-session reward server-side.
  */
 export function StudyTimer({ className }: { className?: string }) {
   const [minutes, setMinutes] = React.useState<number>(25);
   const [secondsLeft, setSecondsLeft] = React.useState<number>(25 * 60);
   const [running, setRunning] = React.useState(false);
   const [mode, setMode] = React.useState<"focus" | "break">("focus");
+  const [open, setOpen] = React.useState(false);
 
   const total = (mode === "focus" ? minutes : BREAK_MINUTES) * 60;
 
@@ -42,10 +44,7 @@ export function StudyTimer({ className }: { className?: string }) {
     setRunning(false);
     if (mode === "focus") {
       api
-        .post("rewards/activity/", {
-          reason: "Study session",
-          context: { minutes },
-        })
+        .post("rewards/activity/", { reason: "Study session", context: { minutes } })
         .catch(() => {});
       setMode("break");
       setSecondsLeft(BREAK_MINUTES * 60);
@@ -70,55 +69,61 @@ export function StudyTimer({ className }: { className?: string }) {
   const mm = String(Math.floor(secondsLeft / 60)).padStart(2, "0");
   const ss = String(secondsLeft % 60).padStart(2, "0");
   const pct = total ? ((total - secondsLeft) / total) * 100 : 0;
-
-  // SVG ring geometry
-  const R = 52;
+  const R = 26;
   const C = 2 * Math.PI * R;
 
   return (
     <Card className={cn("overflow-hidden", className)}>
-      <CardContent className="flex flex-col items-center gap-5 p-6 sm:flex-row sm:gap-8">
-        <div className="relative h-32 w-32 shrink-0">
-          <svg viewBox="0 0 120 120" className="h-full w-full -rotate-90">
-            <circle
-              cx="60"
-              cy="60"
-              r={R}
-              fill="none"
-              strokeWidth="10"
-              className="stroke-secondary"
-            />
-            <circle
-              cx="60"
-              cy="60"
-              r={R}
-              fill="none"
-              strokeWidth="10"
-              strokeLinecap="round"
-              className={mode === "focus" ? "stroke-primary" : "stroke-accent2"}
-              strokeDasharray={C}
-              strokeDashoffset={C - (pct / 100) * C}
-              style={{ transition: "stroke-dashoffset 1s linear" }}
-            />
-          </svg>
-          <div className="absolute inset-0 flex flex-col items-center justify-center">
-            <span className="text-2xl font-bold tabular-nums">
-              {mm}:{ss}
-            </span>
-            <span className="text-xs uppercase tracking-wide text-muted-foreground">
-              {mode}
-            </span>
-          </div>
+      {/* Slim bar — always visible */}
+      <div className="flex items-center gap-3 px-4 py-3">
+        <span className="flex h-9 w-9 items-center justify-center rounded-lg bg-secondary">
+          <Timer className="h-4 w-4" />
+        </span>
+        <div className="flex flex-1 items-baseline gap-2">
+          <span className="text-lg font-bold tabular-nums">
+            {mm}:{ss}
+          </span>
+          <span className="text-xs uppercase tracking-wide text-muted-foreground">
+            {mode}
+          </span>
         </div>
+        <Button size="sm" onClick={() => setRunning((r) => !r)}>
+          {running ? <Pause className="h-4 w-4" /> : <Play className="h-4 w-4" />}
+          {running ? "Pause" : "Start"}
+        </Button>
+        <Button
+          size="icon"
+          variant="ghost"
+          aria-label="Toggle timer options"
+          onClick={() => setOpen((o) => !o)}
+        >
+          <ChevronDown
+            className={cn("h-4 w-4 transition-transform", open && "rotate-180")}
+          />
+        </Button>
+      </div>
 
-        <div className="flex flex-1 flex-col items-center gap-4 sm:items-start">
-          <div>
-            <h2 className="text-lg font-semibold">Study timer</h2>
-            <p className="text-sm text-muted-foreground">
-              Focus in blocks, earn points for each session.
-            </p>
+      {/* Expanded controls */}
+      {open && (
+        <div className="flex items-center gap-5 border-t px-4 py-4">
+          <div className="relative h-16 w-16 shrink-0">
+            <svg viewBox="0 0 64 64" className="h-full w-full -rotate-90">
+              <circle cx="32" cy="32" r={R} fill="none" strokeWidth="6" className="stroke-secondary" />
+              <circle
+                cx="32"
+                cy="32"
+                r={R}
+                fill="none"
+                strokeWidth="6"
+                strokeLinecap="round"
+                className={mode === "focus" ? "stroke-primary" : "stroke-accent2"}
+                strokeDasharray={C}
+                strokeDashoffset={C - (pct / 100) * C}
+                style={{ transition: "stroke-dashoffset 1s linear" }}
+              />
+            </svg>
           </div>
-          <div className="flex items-center gap-2">
+          <div className="flex flex-1 flex-wrap items-center gap-2">
             {PRESETS.map((p) => (
               <button
                 key={p}
@@ -131,25 +136,12 @@ export function StudyTimer({ className }: { className?: string }) {
                 {p} min
               </button>
             ))}
-          </div>
-          <div className="flex items-center gap-2">
-            <Button onClick={() => setRunning((r) => !r)}>
-              {running ? (
-                <>
-                  <Pause className="h-4 w-4" /> Pause
-                </>
-              ) : (
-                <>
-                  <Play className="h-4 w-4" /> Start
-                </>
-              )}
-            </Button>
-            <Button variant="outline" size="icon" onClick={reset} aria-label="Reset">
-              <RotateCcw className="h-4 w-4" />
+            <Button variant="outline" size="sm" onClick={reset} className="ml-auto">
+              <RotateCcw className="h-4 w-4" /> Reset
             </Button>
           </div>
         </div>
-      </CardContent>
+      )}
     </Card>
   );
 }

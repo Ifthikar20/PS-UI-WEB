@@ -1,15 +1,15 @@
 "use client";
 
 import { Gamepad2 } from "lucide-react";
-import { useApi } from "@/lib/use-api";
+import { useApi, asList } from "@/lib/use-api";
 import { GameCard } from "@/components/app/game-card";
 import { EmptyState } from "@/components/app/empty-state";
 import { Skeleton } from "@/components/ui/skeleton";
-import type { Paginated, GameManifestEntry } from "@/lib/types";
+import type { GameManifestEntry } from "@/lib/types";
 
 export default function GamesPage() {
-  const games = useApi<Paginated<GameManifestEntry>>("games/");
-  const list = games.data?.results ?? [];
+  const games = useApi<GameManifestEntry[]>("games/");
+  const list = asList<GameManifestEntry>(games.data);
 
   return (
     <div className="mx-auto max-w-6xl space-y-6">

@@ -10,7 +10,8 @@ import type { Paginated, StudySet, GameManifestEntry } from "@/lib/types";
 /** Shared data fetch for every dashboard flavor. */
 export function useDashboardData() {
   const sets = useApi<Paginated<StudySet>>("studysets/");
-  const games = useApi<Paginated<GameManifestEntry>>("games/");
+  // The games endpoint returns a bare array (not paginated).
+  const games = useApi<GameManifestEntry[]>("games/");
   return { sets, games };
 }
 

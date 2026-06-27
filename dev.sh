@@ -37,8 +37,10 @@ start_web() {
   cd "$WEB_DIR"
   [ -f .env.local ] || { cp .env.example .env.local; echo "  created .env.local"; }
   [ -d node_modules ] || { echo "  installing npm deps…"; npm install --no-fund --no-audit; }
-  echo "→ Web app: http://localhost:$WEB_PORT"
-  PORT="$WEB_PORT" npm run dev &
+  echo "→ Web app: http://localhost:$WEB_PORT (auto-login enabled)"
+  # Auto-login as the demo user so you don't sign in every run. Disable with
+  # DEV_AUTOLOGIN=0 ./dev.sh
+  PORT="$WEB_PORT" DEV_AUTOLOGIN="${DEV_AUTOLOGIN:-1}" npm run dev &
   PIDS+=("$!")
 }
 
@@ -76,6 +78,8 @@ start_backend() {
   python manage.py migrate --noinput
   echo "  seeding demo login credentials…"
   python manage.py seed_demo || echo "  (seed_demo unavailable — skipping)"
+  echo "  seeding games…"
+  python manage.py seed_games || echo "  (seed_games unavailable — skipping)"
   echo "→ Backend: http://localhost:$BACKEND_PORT"
   python manage.py runserver "0.0.0.0:$BACKEND_PORT" &
   PIDS+=("$!")
