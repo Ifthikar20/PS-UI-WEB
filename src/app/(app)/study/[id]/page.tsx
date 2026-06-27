@@ -15,9 +15,9 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
 import { Quiz } from "@/components/study/quiz";
-import { Markdown } from "@/components/study/markdown";
+import { NotesReader } from "@/components/study/notes-reader";
 import { ReaderToolbar } from "@/components/study/reader-toolbar";
-import { LearningTree } from "@/components/study/learning-tree";
+import { LearningTreeGraph } from "@/components/study/learning-tree-graph";
 import type { StudySet, StudySection } from "@/lib/types";
 
 function useProgress(id: string, count: number) {
@@ -105,7 +105,7 @@ export default function StudySetPage({
   }
 
   return (
-    <div className="mx-auto max-w-3xl space-y-6">
+    <div className="mx-auto max-w-4xl space-y-6">
       <Button variant="ghost" size="sm" asChild className="-ml-2 w-fit">
         <Link href="/library">
           <ArrowLeft className="h-4 w-4" /> Library
@@ -146,8 +146,9 @@ export default function StudySetPage({
             <Card>
               <CardContent className="p-6">
                 <h2 className="mb-2 font-semibold">Summary</h2>
-                <Markdown
+                <NotesReader
                   content={set.summary}
+                  storageKey={`${id}:summary`}
                   className={cn(
                     FONT_CLASS[reading.font],
                     SIZE_CLASS[reading.size],
@@ -167,15 +168,20 @@ export default function StudySetPage({
                     <h2 className="text-lg font-semibold">{section.title}</h2>
                     <Button
                       size="sm"
-                      variant={isDone ? "secondary" : "outline"}
+                      variant={isDone ? "secondary" : "ghost"}
                       onClick={() => markSection(i)}
+                      className={cn(
+                        "text-muted-foreground",
+                        isDone && "text-green-600",
+                      )}
                     >
                       <Check className="h-4 w-4" />
-                      {isDone ? "Completed" : "Mark complete"}
+                      {isDone ? "Reviewed" : "Got it"}
                     </Button>
                   </div>
-                  <Markdown
+                  <NotesReader
                     content={section.content}
+                    storageKey={`${id}:s${i}`}
                     className={cn(
                       FONT_CLASS[reading.font],
                       SIZE_CLASS[reading.size],
@@ -191,10 +197,12 @@ export default function StudySetPage({
         <TabsContent value="path">
           <Card>
             <CardContent className="p-6">
-              <LearningTree
+              <LearningTreeGraph
+                title={set.title}
                 sections={sections}
                 completed={done}
                 current={current}
+                words={set.wordGame ?? []}
                 onSelect={markSection}
               />
             </CardContent>

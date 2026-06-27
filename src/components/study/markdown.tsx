@@ -102,6 +102,37 @@ const H_CLASS: Record<number, string> = {
   6: "mt-4 mb-1 text-sm font-semibold uppercase tracking-wide text-muted-foreground",
 };
 
+/** Render markdown to an HTML string (shared by <Markdown> and the notes reader). */
+export function markdownToHtml(md: string): string {
+  const blocks = parse(md || "");
+  const out: string[] = [];
+  for (const b of blocks) {
+    if (b.type === "h") {
+      const lvl = Math.min(b.level + 1, 6);
+      out.push(`<h${lvl} class="${H_CLASS[b.level]}">${inline(b.text)}</h${lvl}>`);
+    } else if (b.type === "ul") {
+      out.push(
+        `<ul class="list-disc space-y-1.5 pl-6 marker:text-muted-foreground">${b.items
+          .map((it) => `<li>${inline(it)}</li>`)
+          .join("")}</ul>`,
+      );
+    } else if (b.type === "ol") {
+      out.push(
+        `<ol class="list-decimal space-y-1.5 pl-6 marker:text-muted-foreground">${b.items
+          .map((it) => `<li>${inline(it)}</li>`)
+          .join("")}</ol>`,
+      );
+    } else if (b.type === "quote") {
+      out.push(
+        `<blockquote class="border-l-2 border-primary/40 pl-4 italic text-muted-foreground">${inline(b.text)}</blockquote>`,
+      );
+    } else {
+      out.push(`<p>${inline(b.text)}</p>`);
+    }
+  }
+  return out.join("");
+}
+
 export function Markdown({
   content,
   className,
@@ -109,51 +140,11 @@ export function Markdown({
   content: string;
   className?: string;
 }) {
-  const blocks = React.useMemo(() => parse(content || ""), [content]);
+  const html = React.useMemo(() => markdownToHtml(content), [content]);
   return (
-    <div className={cn("space-y-3", className)}>
-      {blocks.map((b, idx) => {
-        if (b.type === "h") {
-          const Tag = `h${Math.min(b.level + 1, 6)}` as keyof React.JSX.IntrinsicElements;
-          return (
-            <Tag
-              key={idx}
-              className={H_CLASS[b.level]}
-              dangerouslySetInnerHTML={{ __html: inline(b.text) }}
-            />
-          );
-        }
-        if (b.type === "ul") {
-          return (
-            <ul key={idx} className="list-disc space-y-1.5 pl-6 marker:text-muted-foreground">
-              {b.items.map((it, j) => (
-                <li key={j} dangerouslySetInnerHTML={{ __html: inline(it) }} />
-              ))}
-            </ul>
-          );
-        }
-        if (b.type === "ol") {
-          return (
-            <ol key={idx} className="list-decimal space-y-1.5 pl-6 marker:text-muted-foreground">
-              {b.items.map((it, j) => (
-                <li key={j} dangerouslySetInnerHTML={{ __html: inline(it) }} />
-              ))}
-            </ol>
-          );
-        }
-        if (b.type === "quote") {
-          return (
-            <blockquote
-              key={idx}
-              className="border-l-2 border-primary/40 pl-4 italic text-muted-foreground"
-              dangerouslySetInnerHTML={{ __html: inline(b.text) }}
-            />
-          );
-        }
-        return (
-          <p key={idx} dangerouslySetInnerHTML={{ __html: inline(b.text) }} />
-        );
-      })}
-    </div>
+    <div
+      className={cn("space-y-3", className)}
+      dangerouslySetInnerHTML={{ __html: html }}
+    />
   );
 }
