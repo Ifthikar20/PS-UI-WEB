@@ -11,9 +11,6 @@ import { useFocusTimer, formatClock } from "./focus-timer-provider";
  */
 export function TimerPill() {
   const t = useFocusTimer();
-  // Only surface once a session is under way.
-  const active = t.running || t.secondsLeft !== t.minutes * 60;
-  if (!active) return null;
 
   const dot = !t.running
     ? "bg-muted-foreground"
