@@ -14,6 +14,7 @@ import { EmptyState } from "@/components/app/empty-state";
 import { StudyTimer } from "./study-timer";
 import { DashboardLearningPath } from "./learning-path";
 import { ActivityOverview } from "@/components/charts/activity-overview";
+import { ExamReminder } from "@/components/exam/exam-reminder";
 import {
   useDashboardData,
   greeting,
@@ -50,6 +51,8 @@ export function FocusDashboard() {
           </Link>
         </Button>
       </div>
+
+      <ExamReminder />
 
       {/* Study timer pinned to the top */}
       <StudyTimer />

@@ -12,14 +12,21 @@ import type { QuizQuestion } from "@/lib/types";
 export function Quiz({
   questions,
   studySetId,
+  autoReport = true,
+  onComplete,
 }: {
   questions: QuizQuestion[];
   studySetId: string;
+  /** When false, the quiz reports nothing itself (caller handles rewards). */
+  autoReport?: boolean;
+  /** Called once on finish with the tally and which question ids were missed. */
+  onComplete?: (r: { correct: number; total: number; wrongIds: string[] }) => void;
 }) {
   const [index, setIndex] = React.useState(0);
   const [selected, setSelected] = React.useState<number | null>(null);
   const [correct, setCorrect] = React.useState(0);
   const [done, setDone] = React.useState(false);
+  const wrongIds = React.useRef<string[]>([]);
 
   const q = questions[index];
   const total = questions.length;
@@ -36,29 +43,33 @@ export function Quiz({
     if (selected !== null) return;
     setSelected(i);
     if (i === q.correctIndex) setCorrect((c) => c + 1);
+    else if (q.id) wrongIds.current.push(q.id);
   }
 
   function next() {
     if (index + 1 >= total) {
       setDone(true);
-      // Award completion server-side (server recomputes points).
-      api
-        .post("rewards/activity/", {
-          // Backend scores "Finished a quiz" on context.score (capped at 10).
-          reason: "Finished a quiz",
-          context: { studySetId, score: correct, total },
-        })
-        .catch(() => {});
-      // Record accuracy for the analytics board (avg score %).
-      api
-        .post("progress/complete/", {
-          studySetId,
-          sectionIndex: 0,
-          sectionTitle: "Quiz",
-          correct,
-          total,
-        })
-        .catch(() => {});
+      if (autoReport) {
+        // Award completion server-side (server recomputes points).
+        api
+          .post("rewards/activity/", {
+            // Backend scores "Finished a quiz" on context.score (capped at 10).
+            reason: "Finished a quiz",
+            context: { studySetId, score: correct, total },
+          })
+          .catch(() => {});
+        // Record accuracy for the analytics board (avg score %).
+        api
+          .post("progress/complete/", {
+            studySetId,
+            sectionIndex: 0,
+            sectionTitle: "Quiz",
+            correct,
+            total,
+          })
+          .catch(() => {});
+      }
+      onComplete?.({ correct, total, wrongIds: wrongIds.current });
       return;
     }
     setIndex((n) => n + 1);

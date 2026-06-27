@@ -112,16 +112,63 @@ export type GameManifestEntry = {
   sdkVersion?: string;
 };
 
+export type ExamStatus =
+  | "draft"
+  | "generating"
+  | "proposed"
+  | "active"
+  | "completed";
+
 export type ExamPlan = {
-  id: number;
+  id: string;
   materialId: string;
   materialTitle: string;
   examTitle: string;
   examDate: string;
   questionsPerDay: number;
   topics: string[];
+  status: ExamStatus;
+  approvedAt: string | null;
+  excludedTopics: string[];
+  frequencyMultiplier: number;
   createdAt: string;
   results: Record<string, { correct: number; total: number; completed?: boolean }>;
+  progress?: { totalDays: number; completedDays: number };
+  /** Present on the generate/ response. */
+  days?: ExamDaySummary[];
+};
+
+export type ExamDaySummary = {
+  ymd: string;
+  dayIndex: number;
+  sectionIndex: number;
+  sectionTitle: string;
+  questionCount: number;
+};
+
+export type ExamToday = {
+  date: string;
+  dayIndex: number;
+  status: ExamStatus;
+  section: { title: string; content: string; example: string };
+  questions: QuizQuestion[];
+  reviewQuestions: QuizQuestion[];
+  result: { correct: number; total: number; completed: boolean } | null;
+} | null;
+
+export type ExamReminder = {
+  planId: string;
+  planTitle: string;
+  ymd: string;
+  sessionDone: boolean;
+  dueReview: number;
+  daysLeft: number;
+};
+
+export type ExamSettings = {
+  frequencyMultiplier: number;
+  excludedTopics: string[];
+  questionsPerDay: number;
 };
 
 export type Paginated<T> = {

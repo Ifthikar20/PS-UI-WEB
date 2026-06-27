@@ -12,6 +12,7 @@ import { Progress } from "@/components/ui/progress";
 import { StudySetCard } from "@/components/app/study-set-card";
 import { GameCard } from "@/components/app/game-card";
 import { EmptyState } from "@/components/app/empty-state";
+import { ExamReminder } from "@/components/exam/exam-reminder";
 import {
   useDashboardData,
   greeting,
@@ -50,6 +51,8 @@ export function PlayfulDashboard() {
           </Button>
         </CardContent>
       </Card>
+
+      <ExamReminder />
 
       {/* Colorful stat cards */}
       <div className="grid gap-4 sm:grid-cols-3">

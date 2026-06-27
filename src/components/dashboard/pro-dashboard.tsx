@@ -11,6 +11,7 @@ import { Badge } from "@/components/ui/badge";
 import { EmptyState } from "@/components/app/empty-state";
 import { GameCard } from "@/components/app/game-card";
 import { ActivityOverview } from "@/components/charts/activity-overview";
+import { ExamReminder } from "@/components/exam/exam-reminder";
 import {
   useDashboardData,
   greeting,
@@ -46,6 +47,8 @@ export function ProDashboard() {
           </Link>
         </Button>
       </div>
+
+      <ExamReminder />
 
       {/* Compact metric row */}
       <div className="grid grid-cols-2 gap-px overflow-hidden rounded-xl border bg-border sm:grid-cols-4">
