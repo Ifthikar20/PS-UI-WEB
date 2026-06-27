@@ -71,7 +71,7 @@ export function FocusDashboard() {
         <StatTile
           icon={<Trophy className="h-5 w-5" />}
           label="Rank"
-          value={rewards ? `${rewards.rank.emoji} ${rewards.rank.name}` : "—"}
+          value={rewards ? rewards.rank.name : "—"}
         />
       </div>
 
@@ -79,12 +79,10 @@ export function FocusDashboard() {
         <Card>
           <CardContent className="p-6">
             <div className="flex items-center justify-between text-sm">
-              <span className="font-medium">
-                {rewards.rank.emoji} {rewards.rank.name}
-              </span>
+              <span className="font-medium">{rewards.rank.name}</span>
               <span className="text-muted-foreground">
-                {rewards.pointsToNextRank.toLocaleString()} pts to{" "}
-                {rewards.nextRank.emoji} {rewards.nextRank.name}
+                {rewards.pointsToNextRank.toLocaleString()} points to{" "}
+                {rewards.nextRank.name}
               </span>
             </div>
             <Progress

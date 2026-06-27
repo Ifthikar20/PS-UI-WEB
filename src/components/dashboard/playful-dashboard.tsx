@@ -38,10 +38,10 @@ export function PlayfulDashboard() {
           </span>
           <div className="flex-1">
             <h1 className="text-2xl font-bold tracking-tight md:text-3xl">
-              {greeting(me?.user.name)}! 🎉
+              {greeting(me?.user.name)}
             </h1>
             <p className="mt-1 text-muted-foreground">
-              Ready to play and learn something new today?
+              Ready to learn something new today?
             </p>
           </div>
           <Button size="lg" asChild>
@@ -73,7 +73,7 @@ export function PlayfulDashboard() {
             <div>
               <div className="text-sm">Streak</div>
               <div className="text-2xl font-extrabold">
-                {rewards?.streak ?? 0} days
+                {rewards?.streak ?? 0} day{(rewards?.streak ?? 0) === 1 ? "" : "s"}
               </div>
             </div>
           </CardContent>
@@ -84,7 +84,7 @@ export function PlayfulDashboard() {
             <div>
               <div className="text-sm">Rank</div>
               <div className="text-2xl font-extrabold">
-                {rewards ? `${rewards.rank.emoji} ${rewards.rank.name}` : "—"}
+                {rewards ? rewards.rank.name : "—"}
               </div>
             </div>
           </CardContent>
@@ -95,17 +95,16 @@ export function PlayfulDashboard() {
         <Card className="border-2">
           <CardContent className="p-6">
             <div className="flex items-center justify-between text-sm font-semibold">
-              <span>{rewards.rank.emoji} {rewards.rank.name}</span>
-              <span>
-                {rewards.nextRank.emoji} {rewards.nextRank.name}
-              </span>
+              <span>{rewards.rank.name}</span>
+              <span className="text-muted-foreground">{rewards.nextRank.name}</span>
             </div>
             <Progress
               className="mt-3 h-3"
               value={Math.round((rewards.rankProgress || 0) * 100)}
             />
-            <p className="mt-2 text-center text-sm text-muted-foreground">
-              {rewards.pointsToNextRank.toLocaleString()} points to level up! 🚀
+            <p className="mt-2 text-sm text-muted-foreground">
+              {rewards.pointsToNextRank.toLocaleString()} points to{" "}
+              {rewards.nextRank.name}
             </p>
           </CardContent>
         </Card>
@@ -113,7 +112,7 @@ export function PlayfulDashboard() {
 
       {/* Games front and center */}
       <section>
-        <SectionHeader title="Pick a game 🎮" href="/games" cta="All games" />
+        <SectionHeader title="Games" href="/games" cta="All games" />
         {games.loading ? (
           <CardGridSkeleton />
         ) : (
@@ -126,7 +125,7 @@ export function PlayfulDashboard() {
       </section>
 
       <section>
-        <SectionHeader title="Your study sets 📚" href="/library" cta="View all" />
+        <SectionHeader title="Your study sets" href="/library" cta="View all" />
         {sets.loading ? (
           <CardGridSkeleton />
         ) : recent.length === 0 ? (

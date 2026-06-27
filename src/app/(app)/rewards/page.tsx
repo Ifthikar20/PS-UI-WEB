@@ -67,12 +67,9 @@ export default function RewardsPage() {
         <Card>
           <CardContent className="p-6">
             <div className="flex items-center justify-between text-sm">
-              <span className="font-medium">
-                {r.rank.emoji} {r.rank.name}
-              </span>
+              <span className="font-medium">{r.rank.name}</span>
               <span className="text-muted-foreground">
-                {r.pointsToNextRank.toLocaleString()} to {r.nextRank.emoji}{" "}
-                {r.nextRank.name}
+                {r.pointsToNextRank.toLocaleString()} points to {r.nextRank.name}
               </span>
             </div>
             <Progress
@@ -86,7 +83,7 @@ export default function RewardsPage() {
       <div>
         <h2 className="mb-3 text-lg font-semibold">All ranks</h2>
         <div className="space-y-2">
-          {RANKS.map((rank) => {
+          {RANKS.map((rank, i) => {
             const reached = points >= rank.threshold;
             const current = r?.rank.name === rank.name;
             return (
@@ -94,14 +91,26 @@ export default function RewardsPage() {
                 key={rank.name}
                 className={cn(
                   "flex items-center justify-between rounded-xl border p-4",
-                  current && "border-primary",
-                  !reached && "opacity-60",
+                  current && "border-primary ring-1 ring-primary",
                 )}
               >
                 <div className="flex items-center gap-3">
-                  <span className="text-2xl">{rank.emoji}</span>
+                  <span
+                    className={cn(
+                      "flex h-8 w-8 items-center justify-center rounded-full text-sm font-semibold",
+                      reached
+                        ? "bg-primary text-primary-foreground"
+                        : "bg-secondary text-muted-foreground",
+                    )}
+                  >
+                    {i + 1}
+                  </span>
                   <span className="font-medium">{rank.name}</span>
-                  {current && <span className="text-xs text-muted-foreground">Current</span>}
+                  {current && (
+                    <span className="rounded-full bg-secondary px-2 py-0.5 text-xs text-muted-foreground">
+                      Current
+                    </span>
+                  )}
                 </div>
                 <span className="text-sm text-muted-foreground">
                   {rank.threshold.toLocaleString()} pts
