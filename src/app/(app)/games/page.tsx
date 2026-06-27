@@ -13,12 +13,16 @@ export default function GamesPage() {
 
   return (
     <div className="mx-auto max-w-6xl space-y-6">
-      <div>
-        <h1 className="text-2xl font-bold tracking-tight md:text-3xl">Games</h1>
-        <p className="mt-1 text-muted-foreground">
-          Pick a game — launch it with a study set to play with your own
-          questions.
-        </p>
+      <div className="flex items-center gap-3">
+        <span className="flex h-11 w-11 items-center justify-center rounded-xl bg-primary/10 text-2xl">
+          🕹️
+        </span>
+        <div>
+          <h1 className="text-2xl font-bold tracking-tight md:text-3xl">Arcade</h1>
+          <p className="mt-0.5 text-muted-foreground">
+            Play your study set as a game — each one shows its controls below.
+          </p>
+        </div>
       </div>
 
       {games.loading ? (

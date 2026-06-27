@@ -10,6 +10,7 @@ import { asList } from "@/lib/use-api";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { GameHost } from "@/components/games/game-host";
+import { GameControls } from "@/components/games/controls";
 import type { GameManifestEntry, StudySet, Paginated } from "@/lib/types";
 
 const GAMES_BASE_URL =
@@ -100,6 +101,13 @@ export default function GameDetailPage({
             studySet={studySet}
             gamesBaseUrl={GAMES_BASE_URL}
           />
+          {/* Per-game controls */}
+          <div className="rounded-xl border bg-card p-4">
+            <div className="mb-2 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+              Controls
+            </div>
+            <GameControls slug={game.slug} />
+          </div>
         </>
       ) : null}
     </div>
