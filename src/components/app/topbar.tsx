@@ -15,6 +15,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { useSession } from "./session-provider";
+import { TimerPill } from "./timer-pill";
 
 function initials(name?: string | null, email?: string) {
   const src = name?.trim() || email || "?";
@@ -34,6 +35,7 @@ export function Topbar() {
         {/* Logo space is handled by sidebar on desktop; keep left clear on mobile */}
       </div>
       <div className="ml-auto flex items-center gap-2 md:gap-3">
+        <TimerPill />
         {rewards && (
           <div className="hidden items-center gap-3 sm:flex">
             <Badge variant="secondary" className="gap-1 font-semibold">

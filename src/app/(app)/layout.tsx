@@ -4,6 +4,7 @@ import { django } from "@/lib/server/django";
 import { isAuthenticated } from "@/lib/server/session";
 import { SessionProvider } from "@/components/app/session-provider";
 import { FlavorProvider } from "@/components/app/flavor-provider";
+import { FocusTimerProvider } from "@/components/app/focus-timer-provider";
 import { PreferenceSync } from "@/components/app/preference-sync";
 import { Sidebar, MobileNav } from "@/components/app/sidebar";
 import { Topbar } from "@/components/app/topbar";
@@ -30,18 +31,20 @@ export default async function AppLayout({
   return (
     <SessionProvider initial={me}>
       <FlavorProvider initial={flavor}>
-        <PreferenceSync />
-        {/* Full-bleed dashboard: sidebar + content fill the viewport. */}
-        <div data-flavor={flavor} className="flex min-h-screen bg-background">
-          <Sidebar />
-          <div className="flex min-w-0 flex-1 flex-col">
-            <Topbar />
-            <main className="flex-1 px-4 pb-24 pt-6 md:px-8 lg:pb-10">
-              {children}
-            </main>
+        <FocusTimerProvider>
+          <PreferenceSync />
+          {/* Full-bleed dashboard: sidebar + content fill the viewport. */}
+          <div data-flavor={flavor} className="flex min-h-screen bg-background">
+            <Sidebar />
+            <div className="flex min-w-0 flex-1 flex-col">
+              <Topbar />
+              <main className="flex-1 px-4 pb-24 pt-6 md:px-8 lg:pb-10">
+                {children}
+              </main>
+            </div>
+            <MobileNav />
           </div>
-          <MobileNav />
-        </div>
+        </FocusTimerProvider>
       </FlavorProvider>
     </SessionProvider>
   );
