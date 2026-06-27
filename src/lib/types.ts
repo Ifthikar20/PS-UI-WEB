@@ -70,6 +70,22 @@ export type StudySection = { title: string; content: string; order: number };
 
 export type WordChallenge = { word: string; clue: string };
 
+/** Instant, no-LLM preview the backend builds before generation runs. */
+export type StudyPreview = {
+  outline?: string[];
+  keyTerms?: string[];
+  summary?: string;
+  readingMinutes?: number;
+  wordCount?: number;
+};
+
+export type StudyStatus =
+  | "pending"
+  | "processing"
+  | "partial"
+  | "ready"
+  | "failed";
+
 export type StudySet = {
   id: string;
   title: string;
@@ -81,16 +97,16 @@ export type StudySet = {
   sections: StudySection[];
   quiz: QuizQuestion[];
   wordGame: WordChallenge[];
-  preview?: string;
-  status: "pending" | "generating" | "ready" | "failed";
+  preview?: StudyPreview;
+  status: StudyStatus;
   createdAt: string;
 };
 
 export type StudySetStatus = {
   id: string;
-  status: StudySet["status"];
+  status: StudyStatus;
   error: string | null;
-  preview?: string;
+  preview?: StudyPreview;
   keyPoints?: string[];
   batchesTotal?: number;
   batchesDone?: number;

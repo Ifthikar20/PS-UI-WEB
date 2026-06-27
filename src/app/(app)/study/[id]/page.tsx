@@ -3,9 +3,9 @@
 import * as React from "react";
 import { use } from "react";
 import Link from "next/link";
-import { ArrowLeft, Gamepad2, Check } from "lucide-react";
-import { useApi } from "@/lib/use-api";
-import { api } from "@/lib/api";
+import { ArrowLeft, Gamepad2, Check, Loader2, Sparkles } from "lucide-react";
+import { api, ApiError } from "@/lib/api";
+import { Progress } from "@/components/ui/progress";
 import { useStudyHeartbeat } from "@/lib/use-heartbeat";
 import { useSyncedReading, FONT_CLASS, SIZE_CLASS } from "@/lib/reading";
 import { Button } from "@/components/ui/button";
@@ -18,7 +18,49 @@ import { Quiz } from "@/components/study/quiz";
 import { NotesReader } from "@/components/study/notes-reader";
 import { ReaderToolbar } from "@/components/study/reader-toolbar";
 import { LearningTreeGraph } from "@/components/study/learning-tree-graph";
-import type { StudySet, StudySection } from "@/lib/types";
+import type { StudySet, StudySection, StudySetStatus } from "@/lib/types";
+
+/**
+ * Live study set: loads immediately and keeps polling while generation runs,
+ * so sections and questions appear as the backend streams them in (it writes
+ * them incrementally and reports progress via the status endpoint).
+ */
+function useLiveStudySet(id: string) {
+  const [set, setSet] = React.useState<StudySet | null>(null);
+  const [status, setStatus] = React.useState<StudySetStatus | null>(null);
+  const [loading, setLoading] = React.useState(true);
+  const [error, setError] = React.useState<string | null>(null);
+
+  React.useEffect(() => {
+    let active = true;
+    let timer: ReturnType<typeof setTimeout>;
+    async function tick() {
+      try {
+        const [s, st] = await Promise.all([
+          api.get<StudySet>(`studysets/${id}/`),
+          api.get<StudySetStatus>(`studysets/${id}/status/`).catch(() => null),
+        ]);
+        if (!active) return;
+        setSet(s);
+        setStatus(st);
+        setLoading(false);
+        const finished = s.status === "ready" || s.status === "failed";
+        if (!finished) timer = setTimeout(tick, 2500);
+      } catch (e) {
+        if (!active) return;
+        setError(e instanceof ApiError ? e.message : "Failed to load");
+        setLoading(false);
+      }
+    }
+    tick();
+    return () => {
+      active = false;
+      clearTimeout(timer);
+    };
+  }, [id]);
+
+  return { set, status, loading, error };
+}
 
 function useProgress(id: string, count: number) {
   const key = `ps_progress_${id}`;
@@ -56,8 +98,10 @@ export default function StudySetPage({
   params: Promise<{ id: string }>;
 }) {
   const { id } = use(params);
-  const { data: set, loading, error } = useApi<StudySet>(`studysets/${id}/`);
+  const { set, status, loading, error } = useLiveStudySet(id);
   const reading = useSyncedReading();
+  const generating =
+    !!set && set.status !== "ready" && set.status !== "failed";
 
   const sections: StudySection[] = React.useMemo(
     () => [...(set?.sections ?? [])].sort((a, b) => a.order - b.order),
@@ -132,6 +176,42 @@ export default function StudySetPage({
         </Button>
       </div>
 
+      {generating && (
+        <Card className="border-primary/40 brand-wash">
+          <CardContent className="flex items-center gap-4 p-4">
+            <Loader2 className="h-5 w-5 shrink-0 animate-spin text-primary" />
+            <div className="flex-1">
+              <div className="text-sm font-medium">
+                Building your study set — content appears as it&apos;s created
+              </div>
+              <div className="mt-0.5 text-xs text-muted-foreground">
+                {sections.length} section{sections.length === 1 ? "" : "s"} ·{" "}
+                {set.quiz?.length ?? 0} questions so far
+                {status?.batchesTotal
+                  ? ` · ${status.batchesDone ?? 0}/${status.batchesTotal} batches`
+                  : ""}
+              </div>
+              <Progress
+                className="mt-2 h-1.5"
+                value={Math.max(
+                  8,
+                  Math.round((status?.progress ?? 0) * 100),
+                )}
+              />
+            </div>
+          </CardContent>
+        </Card>
+      )}
+
+      {set.status === "failed" && (
+        <Card className="border-destructive/40">
+          <CardContent className="p-4 text-sm text-destructive">
+            Generation failed{status?.error ? `: ${status.error}` : ""}. Try
+            creating the set again.
+          </CardContent>
+        </Card>
+      )}
+
       <Tabs defaultValue="read">
         <TabsList>
           <TabsTrigger value="read">Read</TabsTrigger>
@@ -192,6 +272,37 @@ export default function StudySetPage({
               </Card>
             );
           })}
+
+          {/* Before the first section lands, scaffold from the instant preview. */}
+          {sections.length === 0 && (
+            <Card>
+              <CardContent className="p-6">
+                {set.preview?.outline?.length ? (
+                  <>
+                    <div className="mb-3 flex items-center gap-2 text-sm font-medium text-muted-foreground">
+                      <Sparkles className="h-4 w-4" /> Coming up
+                    </div>
+                    <ul className="space-y-2">
+                      {set.preview.outline.map((t, i) => (
+                        <li key={i} className="flex items-center gap-3 text-sm">
+                          <span className="flex h-6 w-6 items-center justify-center rounded-full bg-secondary text-xs">
+                            {i + 1}
+                          </span>
+                          <span className="text-muted-foreground">{t}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  </>
+                ) : (
+                  <div className="space-y-3">
+                    <Skeleton className="h-5 w-1/3" />
+                    <Skeleton className="h-4 w-full" />
+                    <Skeleton className="h-4 w-5/6" />
+                  </div>
+                )}
+              </CardContent>
+            </Card>
+          )}
         </TabsContent>
 
         <TabsContent value="path">

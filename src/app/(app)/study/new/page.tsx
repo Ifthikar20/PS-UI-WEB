@@ -15,56 +15,34 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Progress } from "@/components/ui/progress";
 import type { StudySet, StudySetStatus } from "@/lib/types";
 
-type Phase = "idle" | "uploading" | "creating" | "generating";
+type Phase = "idle" | "uploading" | "creating";
 
 export default function NewStudySetPage() {
   const router = useRouter();
   const [phase, setPhase] = React.useState<Phase>("idle");
-  const [progress, setProgress] = React.useState(0);
   const [error, setError] = React.useState<string | null>(null);
   const [file, setFile] = React.useState<File | null>(null);
 
   const busy = phase !== "idle";
 
-  async function pollUntilReady(id: string) {
-    setPhase("generating");
-    // Adaptive backoff mirroring the mobile poller (1.5s → 3s → 5s).
-    const delays = [1500, 1500, 3000, 3000, 5000];
-    for (let attempt = 0; attempt < 80; attempt++) {
-      const status = await api.get<StudySetStatus>(`studysets/${id}/status/`);
-      setProgress(Math.round((status.progress || 0) * 100));
-      if (status.status === "ready") {
-        router.push(`/study/${id}`);
-        return;
-      }
-      if (status.status === "failed") {
-        throw new ApiError(500, status.error || "Generation failed");
-      }
-      await new Promise((r) =>
-        setTimeout(r, delays[Math.min(attempt, delays.length - 1)]),
-      );
-    }
-    // Took too long — let the user view whatever is ready in the reader.
-    router.push(`/study/${id}`);
-  }
-
   async function create(sourceKind: "link" | "text" | "file", sourceRef: string, title?: string) {
     setError(null);
     try {
       setPhase("creating");
+      // The backend returns 202 immediately and generates in the background,
+      // streaming sections/questions in. Open the reader right away so they
+      // appear as they're created instead of blocking on a spinner.
       const created = await api.post<StudySet & StudySetStatus>("studysets/", {
         sourceKind,
         sourceRef,
         title,
       });
-      await pollUntilReady(created.id);
+      router.push(`/study/${created.id}`);
     } catch (e) {
       setError(e instanceof ApiError ? e.message : "Something went wrong.");
       setPhase("idle");
-      setProgress(0);
     }
   }
 
@@ -103,19 +81,11 @@ export default function NewStudySetPage() {
       <div className="mx-auto flex max-w-md flex-col items-center justify-center py-24 text-center">
         <Loader2 className="h-10 w-10 animate-spin text-muted-foreground" />
         <h2 className="mt-6 text-xl font-semibold">
-          {phase === "uploading"
-            ? "Uploading…"
-            : phase === "creating"
-              ? "Getting started…"
-              : "Generating your study set"}
+          {phase === "uploading" ? "Uploading…" : "Opening your study set…"}
         </h2>
         <p className="mt-2 text-sm text-muted-foreground">
-          This can take up to a minute. We&apos;re creating sections, quizzes,
-          and games.
+          Questions start appearing right away and keep filling in as we go.
         </p>
-        {phase === "generating" && (
-          <Progress className="mt-6 w-full" value={progress} />
-        )}
       </div>
     );
   }
