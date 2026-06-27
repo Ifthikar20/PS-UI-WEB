@@ -49,6 +49,16 @@ export function Quiz({
           context: { studySetId, score: correct, total },
         })
         .catch(() => {});
+      // Record accuracy for the analytics board (avg score %).
+      api
+        .post("progress/complete/", {
+          studySetId,
+          sectionIndex: 0,
+          sectionTitle: "Quiz",
+          correct,
+          total,
+        })
+        .catch(() => {});
       return;
     }
     setIndex((n) => n + 1);

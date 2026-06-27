@@ -4,6 +4,7 @@ import { Flame, Star } from "lucide-react";
 import { useSession } from "@/components/app/session-provider";
 import { Card, CardContent } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
+import { ActivityOverview } from "@/components/charts/activity-overview";
 import { cn } from "@/lib/utils";
 
 // Rank ladder mirrored from the mobile app (lib/core/rewards/rewards_bloc.dart).
@@ -59,6 +60,8 @@ export default function RewardsPage() {
           </CardContent>
         </Card>
       </div>
+
+      <ActivityOverview />
 
       {r?.nextRank && (
         <Card>

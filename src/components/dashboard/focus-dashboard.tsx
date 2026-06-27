@@ -13,6 +13,7 @@ import { GameCard } from "@/components/app/game-card";
 import { EmptyState } from "@/components/app/empty-state";
 import { StudyTimer } from "./study-timer";
 import { DashboardLearningPath } from "./learning-path";
+import { ActivityOverview } from "@/components/charts/activity-overview";
 import {
   useDashboardData,
   greeting,
@@ -90,6 +91,8 @@ export function FocusDashboard() {
           </CardContent>
         </Card>
       )}
+
+      <ActivityOverview />
 
       {pathSet && <DashboardLearningPath set={pathSet} />}
 

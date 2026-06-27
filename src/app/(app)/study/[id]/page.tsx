@@ -5,7 +5,9 @@ import { use } from "react";
 import Link from "next/link";
 import { ArrowLeft, Gamepad2, Check } from "lucide-react";
 import { useApi } from "@/lib/use-api";
-import { useReading, FONT_CLASS, SIZE_CLASS } from "@/lib/reading";
+import { api } from "@/lib/api";
+import { useStudyHeartbeat } from "@/lib/use-heartbeat";
+import { useSyncedReading, FONT_CLASS, SIZE_CLASS } from "@/lib/reading";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -55,13 +57,36 @@ export default function StudySetPage({
 }) {
   const { id } = use(params);
   const { data: set, loading, error } = useApi<StudySet>(`studysets/${id}/`);
-  const reading = useReading();
+  const reading = useSyncedReading();
 
   const sections: StudySection[] = React.useMemo(
     () => [...(set?.sections ?? [])].sort((a, b) => a.order - b.order),
     [set],
   );
   const { done, toggle, current } = useProgress(id, sections.length);
+
+  // Track active reading time (server-side, synced with mobile analytics).
+  useStudyHeartbeat(set?.id, current ?? 0, sections[current ?? 0]?.title ?? "");
+
+  // Mark a section complete locally AND record it server-side for analytics.
+  const markSection = React.useCallback(
+    (i: number) => {
+      const willComplete = !done.has(i);
+      toggle(i);
+      if (willComplete && set) {
+        api
+          .post("progress/complete/", {
+            studySetId: set.id,
+            sectionIndex: i,
+            sectionTitle: sections[i]?.title ?? "",
+            correct: 0,
+            total: 0,
+          })
+          .catch(() => {});
+      }
+    },
+    [done, toggle, set, sections],
+  );
 
   if (loading) {
     return (
@@ -143,7 +168,7 @@ export default function StudySetPage({
                     <Button
                       size="sm"
                       variant={isDone ? "secondary" : "outline"}
-                      onClick={() => toggle(i)}
+                      onClick={() => markSection(i)}
                     >
                       <Check className="h-4 w-4" />
                       {isDone ? "Completed" : "Mark complete"}
@@ -170,7 +195,7 @@ export default function StudySetPage({
                 sections={sections}
                 completed={done}
                 current={current}
-                onSelect={toggle}
+                onSelect={markSection}
               />
             </CardContent>
           </Card>

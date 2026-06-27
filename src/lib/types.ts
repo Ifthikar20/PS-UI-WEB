@@ -5,6 +5,26 @@ export type User = {
   email: string;
   name: string | null;
   avatarUrl: string | null;
+  /** Free-form cross-device settings synced via me/. */
+  preferences?: Record<string, unknown>;
+};
+
+/** Daily rewards activity point (GET rewards/history/). */
+export type HistoryPoint = { date: string; points: number; count: number };
+
+/** Per-set progress analytics (GET progress/me/). */
+export type ProgressAnalytics = {
+  secondsSpent?: number;
+  sectionsCompleted?: number;
+  sectionsTotal?: number;
+  studySets?: {
+    id: string;
+    title: string;
+    sectionsTotal: number;
+    sectionsCompleted: number;
+    secondsSpent: number;
+    avgScorePct: number | null;
+  }[];
 };
 
 export type Rank = { name: string; emoji: string; threshold: number };

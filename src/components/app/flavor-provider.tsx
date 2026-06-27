@@ -3,10 +3,12 @@
 import * as React from "react";
 import {
   DEFAULT_FLAVOR,
+  isFlavor,
   readFlavorCookie,
   writeFlavorCookie,
   type Flavor,
 } from "@/lib/flavor";
+import { useSession } from "./session-provider";
 
 type FlavorContextValue = {
   flavor: Flavor;
@@ -22,12 +24,17 @@ export function FlavorProvider({
   initial: Flavor;
   children: React.ReactNode;
 }) {
+  const { getPref, savePref } = useSession();
   const [flavor, setFlavorState] = React.useState<Flavor>(initial);
 
-  // Reconcile with the cookie on mount (covers client-side changes).
+  // Reconcile on mount: the server-synced preference wins, then the cookie.
   React.useEffect(() => {
-    const cookie = readFlavorCookie();
-    if (cookie && cookie !== flavor) setFlavorState(cookie);
+    const serverFlavor = getPref<string | null>("flavor", null);
+    const next = isFlavor(serverFlavor) ? serverFlavor : readFlavorCookie();
+    if (next && next !== flavor) {
+      writeFlavorCookie(next);
+      setFlavorState(next);
+    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -36,10 +43,14 @@ export function FlavorProvider({
     document.documentElement.dataset.flavor = flavor;
   }, [flavor]);
 
-  const setFlavor = React.useCallback((f: Flavor) => {
-    writeFlavorCookie(f);
-    setFlavorState(f);
-  }, []);
+  const setFlavor = React.useCallback(
+    (f: Flavor) => {
+      writeFlavorCookie(f);
+      setFlavorState(f);
+      savePref("flavor", f); // sync across devices
+    },
+    [savePref],
+  );
 
   return (
     <FlavorContext.Provider value={{ flavor, setFlavor }}>

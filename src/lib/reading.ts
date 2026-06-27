@@ -1,6 +1,7 @@
 "use client";
 
 import * as React from "react";
+import { useSession } from "@/components/app/session-provider";
 
 export type ReaderFont = "sans" | "serif" | "notes";
 export type ReaderSize = "sm" | "md" | "lg";
@@ -36,6 +37,42 @@ export function useReading() {
   }, []);
 
   return { font, setFont, size, setSize };
+}
+
+/**
+ * Reading prefs that also sync to the server (preferred over local on load).
+ * Use inside the app shell where a session is available (e.g. the reader).
+ */
+export function useSyncedReading() {
+  const local = useReading();
+  const { getPref, savePref } = useSession();
+  const hydrated = React.useRef(false);
+
+  React.useEffect(() => {
+    const f = getPref<ReaderFont | null>("readerFont", null);
+    const s = getPref<ReaderSize | null>("readerSize", null);
+    if (f) local.setFont(f);
+    if (s) local.setSize(s);
+    hydrated.current = true;
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  const setFont = React.useCallback(
+    (f: ReaderFont) => {
+      local.setFont(f);
+      savePref("readerFont", f);
+    },
+    [local, savePref],
+  );
+  const setSize = React.useCallback(
+    (s: ReaderSize) => {
+      local.setSize(s);
+      savePref("readerSize", s);
+    },
+    [local, savePref],
+  );
+
+  return { font: local.font, size: local.size, setFont, setSize };
 }
 
 export const FONT_CLASS: Record<ReaderFont, string> = {

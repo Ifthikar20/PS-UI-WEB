@@ -10,6 +10,7 @@ import { Progress } from "@/components/ui/progress";
 import { Badge } from "@/components/ui/badge";
 import { EmptyState } from "@/components/app/empty-state";
 import { GameCard } from "@/components/app/game-card";
+import { ActivityOverview } from "@/components/charts/activity-overview";
 import {
   useDashboardData,
   greeting,
@@ -150,6 +151,8 @@ export function ProDashboard() {
           </Card>
         </div>
       </div>
+
+      <ActivityOverview />
 
       <section>
         <SectionHeader title="Practice with games" href="/games" cta="All games" />

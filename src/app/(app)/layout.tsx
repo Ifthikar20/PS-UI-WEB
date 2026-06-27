@@ -4,6 +4,7 @@ import { django } from "@/lib/server/django";
 import { isAuthenticated } from "@/lib/server/session";
 import { SessionProvider } from "@/components/app/session-provider";
 import { FlavorProvider } from "@/components/app/flavor-provider";
+import { PreferenceSync } from "@/components/app/preference-sync";
 import { Sidebar, MobileNav } from "@/components/app/sidebar";
 import { Topbar } from "@/components/app/topbar";
 import { DEFAULT_FLAVOR, isFlavor, FLAVOR_COOKIE } from "@/lib/flavor";
@@ -29,6 +30,7 @@ export default async function AppLayout({
   return (
     <SessionProvider initial={me}>
       <FlavorProvider initial={flavor}>
+        <PreferenceSync />
         {/* Full-bleed dashboard: sidebar + content fill the viewport. */}
         <div data-flavor={flavor} className="flex min-h-screen bg-background">
           <Sidebar />
