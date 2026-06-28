@@ -40,7 +40,7 @@ export default function ExamTodayPage({
 
   if (today.loading) {
     return (
-      <div className="mx-auto max-w-3xl space-y-4">
+      <div className="mx-auto max-w-5xl space-y-4">
         <Skeleton className="h-8 w-1/2" />
         <Skeleton className="h-64 w-full" />
       </div>
@@ -48,7 +48,7 @@ export default function ExamTodayPage({
   }
   if (!today.data) {
     return (
-      <div className="mx-auto max-w-3xl space-y-4">
+      <div className="mx-auto max-w-5xl space-y-4">
         <Button variant="ghost" size="sm" asChild className="-ml-2 w-fit">
           <Link href={`/exam/${id}`}>
             <ArrowLeft className="h-4 w-4" /> Plan
@@ -79,7 +79,7 @@ export default function ExamTodayPage({
   }
 
   return (
-    <div className="mx-auto max-w-3xl space-y-6">
+    <div className="mx-auto max-w-5xl space-y-6">
       <Button variant="ghost" size="sm" asChild className="-ml-2 w-fit">
         <Link href={`/exam/${id}`}>
           <ArrowLeft className="h-4 w-4" /> Plan

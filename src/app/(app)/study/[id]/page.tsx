@@ -134,7 +134,7 @@ export default function StudySetPage({
 
   if (loading) {
     return (
-      <div className="mx-auto max-w-3xl space-y-4">
+      <div className="mx-auto max-w-6xl space-y-4">
         <Skeleton className="h-8 w-2/3" />
         <Skeleton className="h-64 w-full" />
       </div>
@@ -142,14 +142,14 @@ export default function StudySetPage({
   }
   if (error || !set) {
     return (
-      <div className="mx-auto max-w-3xl">
+      <div className="mx-auto max-w-6xl">
         <p className="text-sm text-destructive">{error ?? "Not found."}</p>
       </div>
     );
   }
 
   return (
-    <div className="mx-auto max-w-4xl space-y-6">
+    <div className="mx-auto max-w-6xl space-y-6">
       <Button variant="ghost" size="sm" asChild className="-ml-2 w-fit">
         <Link href="/library">
           <ArrowLeft className="h-4 w-4" /> Library
