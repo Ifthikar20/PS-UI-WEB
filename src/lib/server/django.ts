@@ -57,13 +57,25 @@ async function tryRefresh(): Promise<string | null> {
   });
   if (!res.ok) {
     if (res.status === 400 || res.status === 401 || res.status === 403) {
-      await clearSession();
+      // May run during a Server Component render, where cookies can't be
+      // written — ignore and let the caller treat the session as expired.
+      await clearSession().catch(() => {});
     }
     return null;
   }
   const data = await res.json();
   const access = data.accessToken as string;
-  await setAccessToken(access);
+  // Persist the new access cookie when allowed. This call THROWS when invoked
+  // during a Server Component render (Next only permits cookie writes in Route
+  // Handlers / Server Actions), so swallow it: the fresh token is still
+  // returned and used for the current request, and a later route-handler call
+  // (e.g. the proxy) re-persists it. Without this guard an expired access token
+  // would crash the app shell into the "can't reach server" screen.
+  try {
+    await setAccessToken(access);
+  } catch {
+    /* cookie write not allowed in this context; token still used below */
+  }
   return access;
 }
 
