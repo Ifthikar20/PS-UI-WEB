@@ -71,6 +71,15 @@ export const GAME_CONTROLS: Record<string, GameControl[]> = {
     { keys: ["G", "↑"], action: "Got it" },
     { keys: ["M", "↓"], action: "Missed" },
   ],
+  flappy: [
+    { keys: ["Space", "↑"], action: "Flap" },
+    { keys: ["1", "2", "3", "4"], action: "Answer to revive" },
+  ],
+  "space-shooter": [
+    { keys: ["←", "→"], action: "Move" },
+    { keys: ["Space"], action: "Fire" },
+    { keys: ["1", "2", "3", "4"], action: "Answer" },
+  ],
 };
 
 export function controlsFor(slug: string): GameControl[] {
