@@ -1,6 +1,6 @@
 import { redirect } from "next/navigation";
 import { cookies } from "next/headers";
-import { django } from "@/lib/server/django";
+import { django, DjangoError } from "@/lib/server/django";
 import { isAuthenticated } from "@/lib/server/session";
 import { SessionProvider } from "@/components/app/session-provider";
 import { FlavorProvider } from "@/components/app/flavor-provider";
@@ -8,6 +8,7 @@ import { FocusTimerProvider } from "@/components/app/focus-timer-provider";
 import { PreferenceSync } from "@/components/app/preference-sync";
 import { Sidebar, MobileNav } from "@/components/app/sidebar";
 import { Topbar } from "@/components/app/topbar";
+import { AppUnavailable } from "@/components/app/app-unavailable";
 import { DEFAULT_FLAVOR, isFlavor, FLAVOR_COOKIE } from "@/lib/flavor";
 import type { Me } from "@/lib/types";
 
@@ -18,11 +19,16 @@ export default async function AppLayout({
 }) {
   if (!(await isAuthenticated())) redirect("/login");
 
+  // Load the signed-in user. If this fails we must NOT redirect to /login:
+  // the session cookies still exist, so middleware would bounce /login right
+  // back here — an infinite /dashboard ↔ /login loop. Instead render a
+  // recovery screen in place (the user can retry or sign out).
   let me: Me | null = null;
   try {
     me = await django<Me>("me/");
-  } catch {
-    redirect("/login");
+  } catch (e) {
+    const expired = e instanceof DjangoError && (e.status === 401 || e.status === 403);
+    return <AppUnavailable expired={expired} />;
   }
 
   const cookieFlavor = (await cookies()).get(FLAVOR_COOKIE)?.value;
