@@ -9,11 +9,14 @@ export function SiteHeader() {
       <div className="container flex h-16 items-center justify-between">
         <Logo />
         <nav className="hidden items-center gap-8 text-sm font-medium text-muted-foreground md:flex">
-          <a href="#features" className="hover:text-foreground transition-colors">
-            Features
+          <a href="#demo" className="hover:text-foreground transition-colors">
+            Play the demo
           </a>
           <a href="#games" className="hover:text-foreground transition-colors">
             Games
+          </a>
+          <a href="#features" className="hover:text-foreground transition-colors">
+            Features
           </a>
           <a href="#how" className="hover:text-foreground transition-colors">
             How it works

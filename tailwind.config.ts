@@ -86,11 +86,26 @@ const config: Config = {
           from: { opacity: "0", transform: "translateY(8px)" },
           to: { opacity: "1", transform: "translateY(0)" },
         },
+        float: {
+          "0%, 100%": { transform: "translateY(0) rotate(var(--float-rot, 0deg))" },
+          "50%": { transform: "translateY(-14px) rotate(var(--float-rot, 0deg))" },
+        },
+        marquee: {
+          from: { transform: "translateX(0)" },
+          to: { transform: "translateX(-50%)" },
+        },
+        "pulse-dot": {
+          "0%, 100%": { opacity: "0.25", transform: "scale(0.8)" },
+          "50%": { opacity: "1", transform: "scale(1.15)" },
+        },
       },
       animation: {
         "accordion-down": "accordion-down 0.2s ease-out",
         "accordion-up": "accordion-up 0.2s ease-out",
         "fade-in": "fade-in 0.4s ease-out both",
+        float: "float 5s ease-in-out infinite",
+        marquee: "marquee 30s linear infinite",
+        "pulse-dot": "pulse-dot 1.6s ease-in-out infinite",
       },
     },
   },

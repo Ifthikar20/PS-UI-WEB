@@ -1,3 +1,4 @@
+import type * as React from "react";
 import Link from "next/link";
 import {
   ArrowRight,
@@ -7,10 +8,18 @@ import {
   Trophy,
   CalendarCheck,
   Users,
-  Brain,
+  Play,
+  RefreshCw,
+  Monitor,
 } from "lucide-react";
 import { SiteHeader } from "@/components/marketing/site-header";
+import { Reveal } from "@/components/marketing/reveal";
+import { PhoneMock, BrowserMock } from "@/components/marketing/device-mocks";
+import { DemoGame } from "@/components/marketing/demo-game";
+import { GamesMarquee } from "@/components/marketing/games-marquee";
+import { AppStoreBadge } from "@/components/marketing/app-store-badge";
 import { Logo } from "@/components/logo";
+import { Pip } from "@/components/pip";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 
@@ -18,215 +27,274 @@ const FEATURES = [
   {
     icon: Sparkles,
     title: "Turn anything into a study set",
-    body: "Paste a link, upload a PDF, or snap your notes. We generate summaries, quizzes, and games automatically.",
-    accent: "bg-pastel-lime",
-  },
-  {
-    icon: BookOpen,
-    title: "Study section by section",
-    body: "Bite-sized sections with a quiz gate so you actually retain what you read.",
-    accent: "bg-pastel-sky",
+    body: "Paste a link, upload a PDF, or snap your notes. Summaries, quizzes, and games are generated automatically — and appear live as they're created.",
   },
   {
     icon: Gamepad2,
     title: "Learn by playing",
-    body: "Your study set powers arcade games — answer questions to keep playing.",
-    accent: "bg-pastel-peach",
+    body: "Six 2D arcade games run on your material. Crash in Flappy Pip? Answer a question to revive. Clear a wave? Answer to launch the next.",
+  },
+  {
+    icon: BookOpen,
+    title: "A reader that works like you do",
+    body: "Notion-style notes with highlighting, section-by-section progress, and a branching learning path.",
   },
   {
     icon: CalendarCheck,
-    title: "Exam prep plans",
-    body: "Set an exam date and get a daily question schedule that paces you to the finish.",
-    accent: "bg-pastel-mint",
+    title: "Exam prep that paces you",
+    body: "Set a date, approve your AI study guide, then read + answer a little every day. Misses go into spaced repetition until you've got them.",
   },
   {
     icon: Trophy,
-    title: "Build a streak & climb ranks",
-    body: "Earn points for every session, keep your streak alive, and rank up from Novice to Legend.",
-    accent: "bg-pastel-lavender",
+    title: "Scores, streaks & ranks",
+    body: "Every round earns points. Beat your personal best, keep the streak alive, climb from Novice upward.",
   },
   {
     icon: Users,
     title: "Family progress",
     body: "Parents can follow along with a guardian dashboard for each learner.",
-    accent: "bg-pastel-sky",
   },
 ];
 
 const STEPS = [
-  {
-    n: "01",
-    title: "Add your material",
-    body: "Link, file, or text — whatever you're studying.",
-  },
-  {
-    n: "02",
-    title: "We generate everything",
-    body: "Summaries, quizzes, flashcards, and word games in seconds.",
-  },
-  {
-    n: "03",
-    title: "Study & play",
-    body: "Read, quiz, and play games that reinforce what matters.",
-  },
+  { n: "01", title: "Add your material", body: "Link, file, or text — whatever you're studying." },
+  { n: "02", title: "Read & play", body: "Study the sections, then let the arcade quiz you on them." },
+  { n: "03", title: "Level up", body: "Beat your best, keep your streak, and watch it stick." },
+];
+
+const SYNC_ITEMS = ["Study sets", "Scores & streaks", "Preferences", "Exam plans"];
+
+/** Floating arcade décor for the hero (hidden on small screens). */
+const FLOATERS: { emoji: string; className: string; delay: string; rot: string }[] = [
+  { emoji: "🐤", className: "left-[8%] top-24 text-5xl", delay: "0s", rot: "-8deg" },
+  { emoji: "🚀", className: "right-[10%] top-32 text-5xl", delay: "0.8s", rot: "10deg" },
+  { emoji: "⚡", className: "left-[16%] bottom-24 text-4xl", delay: "1.6s", rot: "6deg" },
+  { emoji: "🫧", className: "right-[18%] bottom-16 text-4xl", delay: "2.4s", rot: "-6deg" },
+  { emoji: "⭐", className: "left-[38%] top-10 text-3xl", delay: "1.2s", rot: "12deg" },
+  { emoji: "🏆", className: "right-[34%] bottom-6 text-3xl", delay: "2s", rot: "-10deg" },
 ];
 
 export default function LandingPage() {
   return (
-    <div className="flex min-h-screen flex-col">
+    <div className="flex min-h-screen flex-col overflow-x-clip">
       <SiteHeader />
 
-      {/* Hero */}
-      <section className="container flex flex-col items-center py-20 text-center md:py-32">
-        <div className="inline-flex items-center gap-2 rounded-full border bg-secondary px-4 py-1.5 text-sm font-medium animate-fade-in">
-          <Sparkles className="h-4 w-4" />
-          Study notes, reinvented as games
-        </div>
-        <h1 className="mt-6 max-w-3xl text-4xl font-bold tracking-tight md:text-6xl animate-fade-in">
-          Turn your notes into
-          <span className="block">interactive learning.</span>
-        </h1>
-        <p className="mt-6 max-w-xl text-lg text-muted-foreground animate-fade-in">
-          PlayStudy turns any link, document, or photo of your notes into
-          quizzes, flashcards, and arcade games — so studying actually sticks.
-        </p>
-        <div className="mt-8 flex flex-col gap-3 sm:flex-row animate-fade-in">
-          <Button size="lg" asChild>
-            <Link href="/signup">
-              Start free <ArrowRight className="h-4 w-4" />
-            </Link>
-          </Button>
-          <Button size="lg" variant="outline" asChild>
-            <Link href="/login">I already have an account</Link>
-          </Button>
-        </div>
+      {/* ============ Hero ============ */}
+      <section className="relative">
+        {/* gradient glows */}
+        <div className="pointer-events-none absolute -top-32 left-1/2 h-[480px] w-[720px] -translate-x-1/2 rounded-full bg-primary/20 blur-[120px]" />
+        <div className="pointer-events-none absolute right-[12%] top-40 h-64 w-64 rounded-full bg-accent-2/20 blur-[90px]" />
+        {/* floating arcade bits */}
+        {FLOATERS.map((f) => (
+          <span
+            key={f.emoji}
+            aria-hidden
+            style={{ animationDelay: f.delay, "--float-rot": f.rot } as React.CSSProperties}
+            className={`pointer-events-none absolute hidden animate-float drop-shadow-lg md:block ${f.className}`}
+          >
+            {f.emoji}
+          </span>
+        ))}
 
-        {/* Hero mock board */}
-        <div className="mt-16 w-full max-w-4xl">
-          <Card className="overflow-hidden border-2 p-2 shadow-xl">
-            <div className="grid gap-2 rounded-lg bg-muted/40 p-4 md:grid-cols-3">
-              {[
-                { label: "Biology 101", tone: "bg-pastel-mint" },
-                { label: "World History", tone: "bg-pastel-peach" },
-                { label: "Organic Chem", tone: "bg-pastel-lavender" },
-              ].map((c) => (
-                <div
-                  key={c.label}
-                  className="rounded-xl border bg-card p-4 text-left"
-                >
-                  <div
-                    className={`mb-3 flex h-10 w-10 items-center justify-center rounded-lg ${c.tone} text-black`}
-                  >
-                    <Brain className="h-5 w-5" />
-                  </div>
-                  <div className="font-semibold">{c.label}</div>
-                  <div className="text-xs text-muted-foreground">
-                    12 sections · 40 questions
-                  </div>
-                </div>
-              ))}
-            </div>
-          </Card>
+        <div className="container relative flex flex-col items-center py-20 text-center md:py-28">
+          <div className="inline-flex items-center gap-2 rounded-full border bg-secondary/80 px-4 py-1.5 text-sm font-medium backdrop-blur animate-fade-in">
+            <Pip size={20} /> The arcade that studies with you
+          </div>
+          <h1 className="mt-6 max-w-4xl text-4xl font-black tracking-tight md:text-7xl animate-fade-in">
+            Your notes,
+            <span className="block bg-gradient-to-r from-primary via-primary to-accent-2 bg-clip-text text-transparent">
+              playable.
+            </span>
+          </h1>
+          <p className="mt-6 max-w-xl text-lg text-muted-foreground animate-fade-in">
+            PlayStudy turns what you&apos;re learning into 2D arcade games,
+            quizzes, and daily challenges — on the web and on your phone, always
+            in sync.
+          </p>
+          <div className="mt-8 flex flex-col items-center gap-3 sm:flex-row animate-fade-in">
+            <Button size="lg" className="px-8 text-base" asChild>
+              <Link href="/signup">
+                Start free <ArrowRight className="h-4 w-4" />
+              </Link>
+            </Button>
+            <Button size="lg" variant="outline" className="px-8 text-base" asChild>
+              <a href="#demo">
+                <Play className="h-4 w-4 fill-current" /> Play the demo
+              </a>
+            </Button>
+          </div>
+          <div className="mt-6 animate-fade-in">
+            <AppStoreBadge />
+          </div>
         </div>
       </section>
 
-      {/* Features */}
-      <section id="features" className="border-t bg-muted/30 py-20">
+      {/* ============ Split screen: mobile + web ============ */}
+      <section id="everywhere" className="border-t bg-muted/30 py-24">
         <div className="container">
-          <h2 className="text-center text-3xl font-bold tracking-tight md:text-4xl">
-            Everything you need to learn faster
-          </h2>
-          <p className="mx-auto mt-3 max-w-xl text-center text-muted-foreground">
-            The same features you love on mobile, now on the web.
-          </p>
-          <div className="mt-12 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
-            {FEATURES.map((f) => (
-              <Card key={f.title} className="p-6 transition-shadow hover:shadow-md">
-                <div
-                  className={`flex h-11 w-11 items-center justify-center rounded-xl ${f.accent} text-black`}
-                >
-                  <f.icon className="h-5 w-5" />
+          <Reveal className="text-center">
+            <h2 className="text-3xl font-bold tracking-tight md:text-5xl">
+              One account. Every screen.
+            </h2>
+            <p className="mx-auto mt-3 max-w-2xl text-muted-foreground">
+              Start a set on your phone on the bus, finish the round on your
+              laptop. Everything lives in one place, so nothing is ever out of
+              date.
+            </p>
+          </Reveal>
+
+          <div className="mt-14 grid items-center gap-10 lg:grid-cols-[auto_1fr_auto] lg:gap-6">
+            {/* phone */}
+            <Reveal delay={100} className="justify-self-center">
+              <PhoneMock />
+              <div className="mt-6 flex justify-center">
+                <AppStoreBadge />
+              </div>
+            </Reveal>
+
+            {/* sync connector */}
+            <Reveal delay={250} className="justify-self-center">
+              <div className="flex flex-col items-center gap-3 lg:min-w-52">
+                <div className="flex items-center gap-1.5">
+                  {Array.from({ length: 7 }).map((_, i) => (
+                    <span
+                      key={i}
+                      style={{ animationDelay: `${i * 0.18}s` }}
+                      className="h-2 w-2 animate-pulse-dot rounded-full bg-primary"
+                    />
+                  ))}
                 </div>
+                <span className="inline-flex items-center gap-1.5 rounded-full border bg-background px-4 py-1.5 text-sm font-semibold shadow-sm">
+                  <RefreshCw className="h-4 w-4 text-primary" /> Syncs live
+                </span>
+                <div className="flex max-w-56 flex-wrap justify-center gap-1.5">
+                  {SYNC_ITEMS.map((s) => (
+                    <span
+                      key={s}
+                      className="rounded-full bg-secondary px-2.5 py-0.5 text-[11px] font-medium text-muted-foreground"
+                    >
+                      {s}
+                    </span>
+                  ))}
+                </div>
+              </div>
+            </Reveal>
+
+            {/* browser */}
+            <Reveal delay={400} className="w-full max-w-xl justify-self-center">
+              <BrowserMock />
+              <div className="mt-6 flex justify-center">
+                <Button size="lg" variant="outline" asChild>
+                  <Link href="/login">
+                    <Monitor className="h-4 w-4" /> Sign in on the web
+                  </Link>
+                </Button>
+              </div>
+            </Reveal>
+          </div>
+        </div>
+      </section>
+
+      {/* ============ Playable demo ============ */}
+      <section id="demo" className="py-24">
+        <div className="container">
+          <Reveal className="text-center">
+            <h2 className="text-3xl font-bold tracking-tight md:text-5xl">
+              Don&apos;t take our word for it
+            </h2>
+            <p className="mx-auto mt-3 max-w-xl text-muted-foreground">
+              This is the actual in-app game, right here on the page. Crash and
+              you&apos;ll see the trick: answering a question brings you back.
+            </p>
+          </Reveal>
+          <Reveal delay={150} className="mt-12">
+            <DemoGame />
+          </Reveal>
+        </div>
+      </section>
+
+      {/* ============ 2D games ============ */}
+      <section id="games" className="border-t bg-muted/30 py-24">
+        <div className="container">
+          <Reveal className="text-center">
+            <h2 className="text-3xl font-bold tracking-tight md:text-5xl">
+              Built around 2D games
+            </h2>
+            <p className="mx-auto mt-3 max-w-2xl text-muted-foreground">
+              Not gamification stickers — real arcade games where the only way
+              forward is knowing your material. One implementation per game,
+              identical on web and mobile.
+            </p>
+          </Reveal>
+        </div>
+        <Reveal delay={150} className="mt-12">
+          <GamesMarquee />
+        </Reveal>
+      </section>
+
+      {/* ============ Features ============ */}
+      <section id="features" className="container py-24">
+        <Reveal className="text-center">
+          <h2 className="text-3xl font-bold tracking-tight md:text-5xl">
+            A whole learning platform behind the arcade
+          </h2>
+        </Reveal>
+        <div className="mt-12 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+          {FEATURES.map((f, i) => (
+            <Reveal key={f.title} delay={i * 80}>
+              <Card className="h-full p-6 transition-all hover:-translate-y-1 hover:shadow-lg">
+                <span className="inline-flex h-12 w-12 items-center justify-center rounded-2xl bg-primary/10">
+                  <f.icon className="h-6 w-6 text-primary" />
+                </span>
                 <h3 className="mt-4 font-semibold">{f.title}</h3>
                 <p className="mt-2 text-sm text-muted-foreground">{f.body}</p>
               </Card>
-            ))}
-          </div>
+            </Reveal>
+          ))}
         </div>
       </section>
 
-      {/* Games */}
-      <section id="games" className="py-20">
-        <div className="container grid items-center gap-12 lg:grid-cols-2">
-          <div>
-            <div className="inline-flex items-center gap-2 rounded-full border bg-secondary px-3 py-1 text-sm font-medium">
-              <Gamepad2 className="h-4 w-4" /> The same games as the app
-            </div>
-            <h2 className="mt-4 text-3xl font-bold tracking-tight md:text-4xl">
-              Your notes, now playable
-            </h2>
-            <p className="mt-4 text-muted-foreground">
-              Quiz Rush, Word Pop, Flashcard Sprint and more run right in your
-              browser — powered by the exact same game engine as the mobile app.
-              Answer questions from your study set to keep the game going.
-            </p>
-            <Button className="mt-6" asChild>
-              <Link href="/signup">
-                Play your first game <ArrowRight className="h-4 w-4" />
-              </Link>
-            </Button>
-          </div>
-          <div className="grid grid-cols-2 gap-4">
-            {[
-              { name: "Quiz Rush", tone: "bg-pastel-lime" },
-              { name: "Word Pop", tone: "bg-pastel-sky" },
-              { name: "Flashcard Sprint", tone: "bg-pastel-peach" },
-              { name: "True / False", tone: "bg-pastel-lavender" },
-            ].map((g) => (
-              <Card
-                key={g.name}
-                className={`flex aspect-square flex-col justify-end ${g.tone} border-none p-5 text-black`}
-              >
-                <Gamepad2 className="h-7 w-7" />
-                <span className="mt-2 font-semibold">{g.name}</span>
-              </Card>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* How it works */}
-      <section id="how" className="border-t bg-muted/30 py-20">
+      {/* ============ How it works ============ */}
+      <section id="how" className="border-t bg-muted/30 py-24">
         <div className="container">
-          <h2 className="text-center text-3xl font-bold tracking-tight md:text-4xl">
-            Three steps to smarter studying
-          </h2>
+          <Reveal>
+            <h2 className="text-center text-3xl font-bold tracking-tight md:text-4xl">
+              Three steps to smarter studying
+            </h2>
+          </Reveal>
           <div className="mt-12 grid gap-6 md:grid-cols-3">
-            {STEPS.map((s) => (
-              <div key={s.n} className="rounded-xl border bg-card p-6">
-                <div className="text-3xl font-bold text-muted-foreground/40">
-                  {s.n}
+            {STEPS.map((s, i) => (
+              <Reveal key={s.n} delay={i * 120}>
+                <div className="h-full rounded-xl border bg-card p-6">
+                  <div className="text-3xl font-bold text-primary/30">{s.n}</div>
+                  <h3 className="mt-3 font-semibold">{s.title}</h3>
+                  <p className="mt-2 text-sm text-muted-foreground">{s.body}</p>
                 </div>
-                <h3 className="mt-3 font-semibold">{s.title}</h3>
-                <p className="mt-2 text-sm text-muted-foreground">{s.body}</p>
-              </div>
+              </Reveal>
             ))}
           </div>
         </div>
       </section>
 
-      {/* CTA */}
+      {/* ============ CTA ============ */}
       <section className="container py-24">
-        <Card className="flex flex-col items-center gap-6 bg-primary p-12 text-center text-primary-foreground">
-          <h2 className="max-w-xl text-3xl font-bold tracking-tight md:text-4xl">
-            Ready to make studying fun?
-          </h2>
-          <Button size="lg" variant="secondary" asChild>
-            <Link href="/signup">
-              Get started for free <ArrowRight className="h-4 w-4" />
-            </Link>
-          </Button>
-        </Card>
+        <Reveal>
+          <Card className="relative flex flex-col items-center gap-6 overflow-hidden bg-primary p-12 text-center text-primary-foreground">
+            <span aria-hidden className="pointer-events-none absolute -left-4 top-6 rotate-[-12deg] text-6xl opacity-20">🐤</span>
+            <span aria-hidden className="pointer-events-none absolute -right-2 bottom-4 rotate-[10deg] text-6xl opacity-20">🚀</span>
+            <h2 className="max-w-xl text-3xl font-bold tracking-tight md:text-4xl">
+              Ready to press start on studying?
+            </h2>
+            <div className="flex flex-col items-center gap-3 sm:flex-row">
+              <Button size="lg" variant="secondary" asChild>
+                <Link href="/signup">
+                  Get started for free <ArrowRight className="h-4 w-4" />
+                </Link>
+              </Button>
+              <AppStoreBadge />
+            </div>
+          </Card>
+        </Reveal>
       </section>
 
       {/* Footer */}
