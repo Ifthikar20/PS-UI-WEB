@@ -79,7 +79,7 @@ export function DashboardDemo() {
         <span className="h-2.5 w-2.5 rounded-full bg-yellow-400" />
         <span className="h-2.5 w-2.5 rounded-full bg-green-400" />
         <span className="ml-3 flex-1 truncate rounded-md bg-background px-3 py-1 text-[11px] text-muted-foreground">
-          playstudy.app/dashboard
+          playstudy.ai/dashboard
         </span>
         <span className="hidden items-center gap-1 rounded-full bg-primary/10 px-2 py-0.5 text-[10px] font-semibold text-primary sm:inline-flex">
           <Sparkles className="h-3 w-3" /> Live demo

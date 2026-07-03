@@ -14,8 +14,8 @@ export default function ContactPage() {
         <h2>Support</h2>
         <p>
           Email{" "}
-          <a className="font-medium text-primary underline-offset-4 hover:underline" href="mailto:support@playstudy.app">
-            support@playstudy.app
+          <a className="font-medium text-primary underline-offset-4 hover:underline" href="mailto:support@playstudy.ai">
+            support@playstudy.ai
           </a>{" "}
           and include the device you&apos;re on (web or iPhone) plus what you
           were doing — screenshots help a lot. We aim to reply within two
@@ -26,8 +26,8 @@ export default function ContactPage() {
         <h2>Feedback & ideas</h2>
         <p>
           Feature requests and game ideas go to{" "}
-          <a className="font-medium text-primary underline-offset-4 hover:underline" href="mailto:hello@playstudy.app">
-            hello@playstudy.app
+          <a className="font-medium text-primary underline-offset-4 hover:underline" href="mailto:hello@playstudy.ai">
+            hello@playstudy.ai
           </a>
           . Tell us what you&apos;re studying — the arcade grows in the
           directions learners pull it.
@@ -37,8 +37,8 @@ export default function ContactPage() {
         <h2>Schools & families</h2>
         <p>
           Using PlayStudy with a class or several kids at home? Reach out at{" "}
-          <a className="font-medium text-primary underline-offset-4 hover:underline" href="mailto:hello@playstudy.app">
-            hello@playstudy.app
+          <a className="font-medium text-primary underline-offset-4 hover:underline" href="mailto:hello@playstudy.ai">
+            hello@playstudy.ai
           </a>{" "}
           and we&apos;ll help you set up guardian views and shared sets.
         </p>

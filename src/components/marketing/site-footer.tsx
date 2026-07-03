@@ -11,10 +11,21 @@ const COLUMNS: { title: string; links: { label: string; href: string; external?:
     title: "Product",
     links: [
       { label: "How it works", href: "/#film" },
-      { label: "The arcade", href: "/#games" },
       { label: "Live demo", href: "/#demo" },
       { label: "Features", href: "/#features" },
       { label: "Learning journey", href: "/#journey" },
+    ],
+  },
+  {
+    // The arcade lineup we promote — each links into the games section.
+    title: "Games",
+    links: [
+      { label: "Quiz Rush", href: "/#games" },
+      { label: "Flappy Quiz", href: "/#games" },
+      { label: "Word Pop", href: "/#games" },
+      { label: "True / False Blitz", href: "/#games" },
+      { label: "Flashcard Sprint", href: "/#games" },
+      { label: "Space Shooter", href: "/#games" },
     ],
   },
   {
@@ -45,7 +56,7 @@ export function SiteFooter() {
   return (
     <footer className="border-t bg-muted/30">
       <div className="container py-14">
-        <div className="grid gap-10 lg:grid-cols-[1.4fr_repeat(4,1fr)]">
+        <div className="grid gap-10 lg:grid-cols-[1.4fr_repeat(5,1fr)]">
           {/* brand */}
           <div>
             <Logo size={28} />
@@ -81,7 +92,9 @@ export function SiteFooter() {
         </div>
 
         <div className="mt-12 flex flex-col items-center justify-between gap-3 border-t pt-6 text-xs text-muted-foreground sm:flex-row">
-          <p>© {new Date().getFullYear()} PlayStudy. All rights reserved.</p>
+          <p>
+            © {new Date().getFullYear()} PlayStudy · playstudy.ai
+          </p>
           <p>Made with Pip, for learners who&apos;d rather be playing.</p>
         </div>
       </div>

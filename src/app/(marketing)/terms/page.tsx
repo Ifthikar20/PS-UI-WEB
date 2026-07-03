@@ -42,8 +42,8 @@ export default function TermsPage() {
           PlayStudy is provided “as is” while in active development; features
           may change as we improve them. We may suspend accounts that violate
           these terms. Questions:{" "}
-          <a className="font-medium text-primary underline-offset-4 hover:underline" href="mailto:hello@playstudy.app">
-            hello@playstudy.app
+          <a className="font-medium text-primary underline-offset-4 hover:underline" href="mailto:hello@playstudy.ai">
+            hello@playstudy.ai
           </a>
           .
         </p>

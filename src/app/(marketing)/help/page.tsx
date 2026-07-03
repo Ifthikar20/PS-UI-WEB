@@ -35,7 +35,7 @@ export default function HelpPage() {
     <ProsePage
       eyebrow="Help"
       title="Frequently asked"
-      lead="Quick answers to the questions we hear most. Can't find yours? Write to support@playstudy.app."
+      lead="Quick answers to the questions we hear most. Can't find yours? Write to support@playstudy.ai."
     >
       <div className="divide-y rounded-2xl border">
         {FAQS.map((f) => (

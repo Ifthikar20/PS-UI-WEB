@@ -24,9 +24,32 @@ const patrickHand = Patrick_Hand({
 });
 
 export const metadata: Metadata = {
+  metadataBase: new URL("https://playstudy.ai"),
   title: "PlayStudy — Turn your notes into games",
   description:
-    "Snap a picture of your notes and we'll generate quizzes, flashcards, and games to make learning fun.",
+    "Turn any notes into study sets, quizzes, and arcade games — Quiz Rush, Word Pop, Flappy Quiz, and more. Learn by playing, on the web and iPhone.",
+  applicationName: "PlayStudy",
+  keywords: [
+    "study games",
+    "flashcards",
+    "quiz maker",
+    "exam prep",
+    "learning app",
+  ],
+  openGraph: {
+    type: "website",
+    url: "https://playstudy.ai",
+    siteName: "PlayStudy",
+    title: "PlayStudy — Turn your notes into games",
+    description:
+      "Turn any notes into study sets, quizzes, and arcade games. Learn by playing, on the web and iPhone.",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "PlayStudy — Turn your notes into games",
+    description:
+      "Turn any notes into study sets, quizzes, and arcade games. Learn by playing.",
+  },
 };
 
 export default function RootLayout({

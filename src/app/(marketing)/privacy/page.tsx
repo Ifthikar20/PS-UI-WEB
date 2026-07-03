@@ -45,8 +45,8 @@ export default function PrivacyPage() {
           play. You can export or delete your study sets at any time, and
           deleting your account removes your personal data from active systems
           within 30 days. Questions:{" "}
-          <a className="font-medium text-primary underline-offset-4 hover:underline" href="mailto:privacy@playstudy.app">
-            privacy@playstudy.app
+          <a className="font-medium text-primary underline-offset-4 hover:underline" href="mailto:privacy@playstudy.ai">
+            privacy@playstudy.ai
           </a>
           .
         </p>
