@@ -1,10 +1,13 @@
 import Link from "next/link";
-import { ArrowRight, ArrowDown } from "lucide-react";
+import { ArrowRight, ArrowDown, Check } from "lucide-react";
 import { SiteHeader } from "@/components/marketing/site-header";
+import { SiteFooter } from "@/components/marketing/site-footer";
 import { Reveal } from "@/components/marketing/reveal";
 import { PhoneMock, BrowserMock } from "@/components/marketing/device-mocks";
 import { DemoGame } from "@/components/marketing/demo-game";
 import { GamesMarquee } from "@/components/marketing/games-marquee";
+import { GamesArsenal } from "@/components/marketing/games-arsenal";
+import { Journey } from "@/components/marketing/journey";
 import { ProductFilm } from "@/components/marketing/product-film";
 import { AppStoreBadge, APP_STORE_URL } from "@/components/marketing/app-store-badge";
 import {
@@ -16,8 +19,8 @@ import {
   FamilyGlyph,
   AppleGlyph,
   SyncGlyph,
+  BoltGlyph,
 } from "@/components/marketing/glyphs";
-import { Logo } from "@/components/logo";
 
 /** Small uppercase section label — the editorial "eyebrow". */
 function Eyebrow({ children }: { children: React.ReactNode }) {
@@ -110,17 +113,49 @@ export default function LandingPage() {
     <div className="flex min-h-screen flex-col overflow-x-clip">
       <SiteHeader />
 
-      {/* ============ Hero — type first ============ */}
+      {/* ============ Hero — type on paper ============ */}
       <section className="relative pt-36 md:pt-44">
-        {/* backdrop: soft grid + one glow */}
+        {/* backdrop: a sheet of paper fading out mid-hero, ruled by a faint grid */}
         <div
           aria-hidden
-          className="pointer-events-none absolute inset-0 [background-image:linear-gradient(to_right,hsl(var(--border)/0.4)_1px,transparent_1px),linear-gradient(to_bottom,hsl(var(--border)/0.4)_1px,transparent_1px)] [background-size:56px_56px] [mask-image:radial-gradient(60%_50%_at_50%_20%,black,transparent)]"
+          className="bg-paper pointer-events-none absolute inset-x-0 top-0 h-[560px] [mask-image:linear-gradient(to_bottom,black_55%,transparent)]"
         />
         <div
           aria-hidden
-          className="pointer-events-none absolute left-1/2 top-24 h-72 w-[640px] -translate-x-1/2 rounded-full bg-primary/15 blur-[110px]"
+          className="pointer-events-none absolute inset-x-0 top-0 h-[560px] [background-image:linear-gradient(to_right,hsl(var(--border)/0.5)_1px,transparent_1px),linear-gradient(to_bottom,hsl(var(--border)/0.5)_1px,transparent_1px)] [background-size:56px_56px] [mask-image:radial-gradient(55%_60%_at_50%_10%,black,transparent)]"
         />
+
+        {/* character: pinned study scraps (hidden on small screens) */}
+        <Reveal
+          delay={500}
+          className="pointer-events-none absolute left-[6%] top-48 hidden xl:block"
+        >
+          <div className="w-40 -rotate-6 animate-wiggle rounded-xl border bg-card p-3.5 shadow-lg [--wiggle-base:-6deg]">
+            <div className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">
+              Quiz Rush
+            </div>
+            <div className="mt-1 flex items-center justify-between text-sm font-semibold">
+              7 × 8 = 56
+              <span className="flex h-5 w-5 items-center justify-center rounded-full bg-emerald-500/15 text-emerald-600">
+                <Check className="h-3 w-3" />
+              </span>
+            </div>
+          </div>
+        </Reveal>
+        <Reveal
+          delay={650}
+          className="pointer-events-none absolute right-[6%] top-64 hidden xl:block"
+        >
+          <div className="w-36 rotate-[5deg] animate-wiggle rounded-xl border bg-card p-3.5 shadow-lg [--wiggle-base:5deg]">
+            <div className="flex items-center gap-2">
+              <BoltGlyph className="h-4 w-4 text-accent-2" />
+              <span className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">
+                Streak
+              </span>
+            </div>
+            <div className="mt-1 text-sm font-semibold">Day 6 — keep it alive</div>
+          </div>
+        </Reveal>
 
         <div className="container relative flex flex-col items-center text-center">
           <Reveal>
@@ -132,7 +167,27 @@ export default function LandingPage() {
           <Reveal delay={80}>
             <h1 className="mt-8 max-w-4xl text-balance text-5xl font-semibold leading-[1.04] tracking-tight md:text-7xl">
               Studying that
-              <span className="font-serif italic text-primary"> plays back</span>
+              <span className="relative inline-block font-serif italic text-primary">
+                {" "}
+                plays back
+                {/* hand-drawn underline, drawn on load */}
+                <svg
+                  viewBox="0 0 220 14"
+                  className="absolute -bottom-2 left-2 w-[96%] text-accent-2 md:-bottom-3"
+                  fill="none"
+                  aria-hidden
+                >
+                  <path
+                    d="M4 9.5C44 4 96 3 132 6.5c26 2.5 56 3 84-1.5"
+                    stroke="currentColor"
+                    strokeWidth="4"
+                    strokeLinecap="round"
+                    pathLength="1"
+                    strokeDasharray="1"
+                    className="animate-draw"
+                  />
+                </svg>
+              </span>
             </h1>
           </Reveal>
           <Reveal delay={160}>
@@ -173,13 +228,7 @@ export default function LandingPage() {
 
           {/* hero product shot */}
           <Reveal delay={380} className="relative mt-16 w-full max-w-4xl md:mt-20">
-            <div
-              aria-hidden
-              className="absolute -inset-x-8 -top-10 bottom-1/3 rounded-[40px] bg-gradient-to-r from-primary/15 via-accent-2/10 to-primary/15 blur-2xl"
-            />
-            <div className="relative">
-              <BrowserMock />
-            </div>
+            <BrowserMock />
           </Reveal>
         </div>
       </section>
@@ -288,24 +337,47 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* ============ Games ============ */}
+      {/* ============ Games — the arsenal ============ */}
       <section id="games" className="scroll-mt-24 border-t bg-muted/30 py-24 md:py-32">
         <div className="container">
           <Reveal className="text-center">
             <Eyebrow>The arcade</Eyebrow>
             <h2 className="text-balance text-3xl font-semibold tracking-tight md:text-5xl">
-              Real 2D games, powered by your material
+              Six games in the arsenal
             </h2>
             <p className="mx-auto mt-4 max-w-2xl text-muted-foreground">
-              Not gamification stickers — arcade games where the only way
-              forward is knowing your stuff. One implementation per game,
-              identical on web and mobile.
+              Not gamification stickers — real 2D games where the only way
+              forward is knowing your material. Each one trains a different
+              muscle, and every one runs identically on web and mobile.
             </p>
           </Reveal>
         </div>
-        <Reveal delay={150} className="mt-14">
+        <Reveal delay={120} className="mt-12">
           <GamesMarquee />
         </Reveal>
+        <div className="container mt-12">
+          <GamesArsenal />
+        </div>
+      </section>
+
+      {/* ============ The journey — leveling up ============ */}
+      <section id="journey" className="scroll-mt-24 py-24 md:py-32">
+        <div className="container">
+          <Reveal className="text-center">
+            <Eyebrow>The journey</Eyebrow>
+            <h2 className="text-balance text-3xl font-semibold tracking-tight md:text-5xl">
+              Every round levels you up
+            </h2>
+            <p className="mx-auto mt-4 max-w-2xl text-muted-foreground">
+              Reading sections, finishing quizzes, playing rounds, and keeping
+              streaks all earn points — and points climb a real ladder. Seven
+              ranks stand between your first set and Legend.
+            </p>
+          </Reveal>
+          <div className="mt-16">
+            <Journey />
+          </div>
+        </div>
       </section>
 
       {/* ============ Features — bento ============ */}
@@ -338,9 +410,10 @@ export default function LandingPage() {
       <section className="container pb-28">
         <Reveal>
           <div className="relative overflow-hidden rounded-[32px] bg-foreground px-8 py-16 text-center text-background md:py-20">
+            {/* quiet texture instead of a glow */}
             <div
               aria-hidden
-              className="pointer-events-none absolute left-1/2 top-0 h-56 w-[480px] -translate-x-1/2 rounded-full bg-primary/40 blur-[100px]"
+              className="pointer-events-none absolute inset-0 opacity-[0.16] [background-image:linear-gradient(to_right,currentColor_1px,transparent_1px),linear-gradient(to_bottom,currentColor_1px,transparent_1px)] [background-size:44px_44px] [mask-image:radial-gradient(70%_90%_at_50%_0%,black,transparent)]"
             />
             <h2 className="relative mx-auto max-w-2xl text-balance text-3xl font-semibold tracking-tight md:text-5xl">
               Press start on studying
@@ -362,31 +435,7 @@ export default function LandingPage() {
         </Reveal>
       </section>
 
-      {/* Footer */}
-      <footer className="border-t py-12">
-        <div className="container flex flex-col items-center justify-between gap-6 sm:flex-row">
-          <Logo size={26} />
-          <nav className="flex items-center gap-6 text-sm text-muted-foreground">
-            <a href="#film" className="transition-colors hover:text-foreground">
-              How it works
-            </a>
-            <a href="#games" className="transition-colors hover:text-foreground">
-              Games
-            </a>
-            <a
-              href={APP_STORE_URL}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-flex items-center gap-1.5 transition-colors hover:text-foreground"
-            >
-              <AppleGlyph className="h-3.5 w-3.5" /> iPhone app
-            </a>
-          </nav>
-          <p className="text-sm text-muted-foreground">
-            © {new Date().getFullYear()} PlayStudy
-          </p>
-        </div>
-      </footer>
+      <SiteFooter />
     </div>
   );
 }

@@ -1,13 +1,20 @@
 import Link from "next/link";
-import { ArrowLeft, Sparkles, Gamepad2, Trophy } from "lucide-react";
+import { ArrowLeft, Check } from "lucide-react";
 import { Logo } from "@/components/logo";
 import { Pip } from "@/components/pip";
 import { ThemeToggle } from "@/components/theme-toggle";
+import {
+  NotesGlyph,
+  BirdGlyph,
+  TrophyGlyph,
+  SyncGlyph,
+} from "@/components/marketing/glyphs";
 
 const BULLETS = [
-  { icon: Sparkles, text: "Turn notes, links & PDFs into study sets" },
-  { icon: Gamepad2, text: "Play arcade games powered by your own questions" },
-  { icon: Trophy, text: "Build streaks and climb the ranks with Pip" },
+  { Icon: NotesGlyph, text: "Notes, links & PDFs become study sets" },
+  { Icon: BirdGlyph, text: "An arcade powered by your own questions" },
+  { Icon: TrophyGlyph, text: "Streaks, ranks, and personal bests" },
+  { Icon: SyncGlyph, text: "Everything syncs to the iPhone app" },
 ];
 
 export default function AuthLayout({
@@ -16,38 +23,68 @@ export default function AuthLayout({
   children: React.ReactNode;
 }) {
   return (
-    <div className="flex min-h-screen flex-col bg-canvas lg:flex-row">
-      {/* Brand panel with the mascot — hidden on small screens. */}
-      <aside className="brand-wash relative hidden w-1/2 flex-col justify-between p-12 lg:flex">
-        <Logo href="/" />
-        <div>
-          <div className="mb-6 inline-flex rounded-3xl bg-background/70 p-4 shadow-sm backdrop-blur">
-            <Pip size={96} />
+    <div className="flex min-h-screen flex-col lg:flex-row">
+      {/* Brand panel — a sheet of paper with pinned study scraps. */}
+      <aside className="bg-paper relative hidden w-[46%] flex-col justify-between overflow-hidden border-r p-12 lg:flex">
+        {/* faint grid over the paper */}
+        <div
+          aria-hidden
+          className="pointer-events-none absolute inset-0 [background-image:linear-gradient(to_right,hsl(var(--border)/0.55)_1px,transparent_1px),linear-gradient(to_bottom,hsl(var(--border)/0.55)_1px,transparent_1px)] [background-size:48px_48px] [mask-image:radial-gradient(80%_70%_at_30%_20%,black,transparent)]"
+        />
+        {/* pinned scrap, for character */}
+        <div className="pointer-events-none absolute right-10 top-28 hidden w-40 rotate-[5deg] animate-wiggle rounded-xl border bg-card p-3.5 shadow-lg [--wiggle-base:5deg] xl:block">
+          <div className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">
+            Round 3
           </div>
-          <h1 className="max-w-md text-4xl font-bold leading-tight tracking-tight">
+          <div className="mt-1 flex items-center justify-between text-sm font-semibold">
+            New best · 31
+            <span className="flex h-5 w-5 items-center justify-center rounded-full bg-emerald-500/15 text-emerald-600">
+              <Check className="h-3 w-3" />
+            </span>
+          </div>
+        </div>
+
+        <div className="relative">
+          <Logo href="/" />
+        </div>
+
+        <div className="relative">
+          <div className="mb-7 inline-flex animate-float rounded-3xl border bg-background/80 p-4 shadow-sm backdrop-blur [animation-duration:6s]">
+            <Pip size={88} />
+          </div>
+          <h1 className="max-w-md text-balance text-4xl font-semibold leading-tight tracking-tight">
             Study with Pip.
-            <br />
-            Make it stick.
+            <span className="font-serif italic text-primary"> Make it stick.</span>
           </h1>
-          <ul className="mt-8 space-y-3">
-            {BULLETS.map((b) => (
-              <li key={b.text} className="flex items-center gap-3 text-sm">
-                <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-background/70">
-                  <b.icon className="h-4 w-4 text-primary" />
+          <ul className="mt-9 space-y-3.5">
+            {BULLETS.map((b, i) => (
+              <li
+                key={b.text}
+                style={{ animationDelay: `${0.15 + i * 0.12}s` }}
+                className="flex animate-fade-in items-center gap-3 text-sm"
+              >
+                <span className="flex h-9 w-9 items-center justify-center rounded-xl border bg-background/80">
+                  <b.Icon className="h-5 w-5 text-primary" />
                 </span>
                 {b.text}
               </li>
             ))}
           </ul>
         </div>
-        <p className="text-xs text-muted-foreground">
+
+        <p className="relative text-xs text-muted-foreground">
           © {new Date().getFullYear()} PlayStudy
         </p>
       </aside>
 
       {/* Form side */}
-      <div className="flex flex-1 flex-col">
-        <header className="container flex h-16 items-center justify-between lg:justify-end">
+      <div className="relative flex flex-1 flex-col">
+        {/* small screens: a slim paper band up top keeps the theme */}
+        <div
+          aria-hidden
+          className="bg-paper absolute inset-x-0 top-0 h-40 [mask-image:linear-gradient(to_bottom,black_35%,transparent)] lg:hidden"
+        />
+        <header className="container relative flex h-16 items-center justify-between lg:justify-end">
           <span className="lg:hidden">
             <Logo href="/" size={30} />
           </span>
@@ -55,13 +92,13 @@ export default function AuthLayout({
             <ThemeToggle />
             <Link
               href="/"
-              className="inline-flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground"
+              className="inline-flex items-center gap-1.5 rounded-full border bg-background/70 px-4 py-2 text-sm text-muted-foreground backdrop-blur transition-colors hover:text-foreground"
             >
               <ArrowLeft className="h-4 w-4" /> Home
             </Link>
           </div>
         </header>
-        <main className="flex flex-1 items-center justify-center px-6 py-10">
+        <main className="relative flex flex-1 items-center justify-center px-4 py-10 sm:px-6">
           {children}
         </main>
       </div>

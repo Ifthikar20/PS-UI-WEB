@@ -117,6 +117,14 @@ const config: Config = {
         "dash-flow": {
           to: { strokeDashoffset: "-24" },
         },
+        draw: {
+          from: { strokeDashoffset: "1" },
+          to: { strokeDashoffset: "0" },
+        },
+        wiggle: {
+          "0%, 100%": { transform: "rotate(var(--wiggle-base, -3deg))" },
+          "50%": { transform: "rotate(calc(var(--wiggle-base, -3deg) + 2deg))" },
+        },
       },
       animation: {
         "accordion-down": "accordion-down 0.2s ease-out",
@@ -130,6 +138,8 @@ const config: Config = {
         bob: "bob 1.6s ease-in-out infinite",
         "scroll-x": "scroll_x 4s linear infinite",
         "dash-flow": "dash-flow 1s linear infinite",
+        draw: "draw 1.1s ease-out 0.5s both",
+        wiggle: "wiggle 5s ease-in-out infinite",
       },
     },
   },
