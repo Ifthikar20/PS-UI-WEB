@@ -16,6 +16,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { useSession } from "./session-provider";
 import { TimerPill } from "./timer-pill";
+import { WarmthControl } from "./warmth-control";
 
 function initials(name?: string | null, email?: string) {
   const src = name?.trim() || email || "?";
@@ -47,6 +48,7 @@ export function Topbar() {
         )}
         <TimerPill />
         <ThemeToggle />
+        <WarmthControl />
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <button className="rounded-full outline-none ring-offset-background focus-visible:ring-2 focus-visible:ring-ring">

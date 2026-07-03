@@ -39,12 +39,13 @@ export default async function AppLayout({
       <FlavorProvider initial={flavor}>
         <FocusTimerProvider>
           <PreferenceSync />
-          {/* Full-bleed dashboard: sidebar + content fill the viewport. */}
-          <div data-flavor={flavor} className="flex min-h-screen bg-background">
+          {/* Full-bleed dashboard locked to the viewport: the sidebar and
+              topbar stay fixed; only <main> scrolls. */}
+          <div data-flavor={flavor} className="flex h-screen overflow-hidden bg-background">
             <Sidebar />
-            <div className="flex min-w-0 flex-1 flex-col">
+            <div className="flex min-w-0 flex-1 flex-col overflow-hidden">
               <Topbar />
-              <main className="flex-1 px-4 pb-24 pt-6 md:px-8 lg:pb-10">
+              <main className="flex-1 overflow-y-auto px-4 pb-24 pt-6 md:px-8 lg:pb-10">
                 {children}
               </main>
             </div>

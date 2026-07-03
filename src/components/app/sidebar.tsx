@@ -58,7 +58,12 @@ export function Sidebar() {
           </Link>
         </Button>
       </div>
-      <nav className={cn("flex-1 space-y-1 py-4", collapsed ? "px-3" : "px-4")}>
+      <nav
+        className={cn(
+          "flex-1 space-y-1 overflow-y-auto py-4",
+          collapsed ? "px-3" : "px-4",
+        )}
+      >
         {NAV_ITEMS.map((item) => {
           const active =
             pathname === item.href || pathname.startsWith(item.href + "/");
