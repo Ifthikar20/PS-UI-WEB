@@ -98,6 +98,25 @@ const config: Config = {
           "0%, 100%": { opacity: "0.25", transform: "scale(0.8)" },
           "50%": { opacity: "1", transform: "scale(1.15)" },
         },
+        "type-in": {
+          from: { width: "0%" },
+          to: { width: "100%" },
+        },
+        pop: {
+          from: { opacity: "0", transform: "scale(0.6)" },
+          to: { opacity: "1", transform: "scale(1)" },
+        },
+        bob: {
+          "0%, 100%": { transform: "translateY(-5px) rotate(-4deg)" },
+          "50%": { transform: "translateY(6px) rotate(5deg)" },
+        },
+        scroll_x: {
+          from: { transform: "translateX(0)" },
+          to: { transform: "translateX(-160px)" },
+        },
+        "dash-flow": {
+          to: { strokeDashoffset: "-24" },
+        },
       },
       animation: {
         "accordion-down": "accordion-down 0.2s ease-out",
@@ -106,6 +125,11 @@ const config: Config = {
         float: "float 5s ease-in-out infinite",
         marquee: "marquee 30s linear infinite",
         "pulse-dot": "pulse-dot 1.6s ease-in-out infinite",
+        "type-in": "type-in 1.2s ease-out both",
+        pop: "pop 0.45s cubic-bezier(0.2, 0.9, 0.3, 1.4) both",
+        bob: "bob 1.6s ease-in-out infinite",
+        "scroll-x": "scroll_x 4s linear infinite",
+        "dash-flow": "dash-flow 1s linear infinite",
       },
     },
   },

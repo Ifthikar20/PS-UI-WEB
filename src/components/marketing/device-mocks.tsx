@@ -1,6 +1,7 @@
 import Image from "next/image";
 import { Flame, Star, Play } from "lucide-react";
 import { Pip } from "@/components/pip";
+import { BirdGlyph, RocketGlyph, BoltGlyph, BubblesGlyph } from "./glyphs";
 import dashboardShot from "../../../docs/screenshots/dashboard.png";
 
 /**
@@ -10,10 +11,10 @@ import dashboardShot from "../../../docs/screenshots/dashboard.png";
  */
 
 const MINI_GAMES = [
-  { emoji: "🐤", bg: "bg-orange-100 dark:bg-orange-950/50" },
-  { emoji: "🚀", bg: "bg-violet-100 dark:bg-violet-950/50" },
-  { emoji: "⚡", bg: "bg-yellow-100 dark:bg-yellow-950/50" },
-  { emoji: "🫧", bg: "bg-emerald-100 dark:bg-emerald-950/50" },
+  { Icon: BirdGlyph, cls: "bg-accent-2/10 text-accent-2" },
+  { Icon: RocketGlyph, cls: "bg-primary/10 text-primary" },
+  { Icon: BoltGlyph, cls: "bg-amber-500/10 text-amber-500" },
+  { Icon: BubblesGlyph, cls: "bg-sky-500/10 text-sky-500" },
 ];
 
 export function PhoneMock() {
@@ -64,12 +65,12 @@ export function PhoneMock() {
               Arcade
             </div>
             <div className="grid grid-cols-4 gap-1.5">
-              {MINI_GAMES.map((g) => (
+              {MINI_GAMES.map((g, i) => (
                 <div
-                  key={g.emoji}
-                  className={`flex aspect-square items-center justify-center rounded-xl text-xl ${g.bg}`}
+                  key={i}
+                  className={`flex aspect-square items-center justify-center rounded-xl ${g.cls}`}
                 >
-                  {g.emoji}
+                  <g.Icon className="h-6 w-6" />
                 </div>
               ))}
             </div>
