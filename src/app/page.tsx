@@ -5,7 +5,6 @@ import { SiteFooter } from "@/components/marketing/site-footer";
 import { Reveal } from "@/components/marketing/reveal";
 import { PhoneMock, BrowserMock } from "@/components/marketing/device-mocks";
 import { DashboardDemo } from "@/components/marketing/dashboard-demo";
-import { DemoGame } from "@/components/marketing/demo-game";
 import { GamesMarquee } from "@/components/marketing/games-marquee";
 import { GamesArsenal } from "@/components/marketing/games-arsenal";
 import { Journey } from "@/components/marketing/journey";
@@ -227,8 +226,13 @@ export default function LandingPage() {
             </a>
           </Reveal>
 
-          {/* hero product shot — the dashboard, playing itself */}
-          <Reveal delay={380} className="relative mt-16 w-full max-w-4xl md:mt-20">
+          {/* hero product shot — the dashboard, playing itself (this is the
+              site's live demo; nav "Live demo" links point here) */}
+          <Reveal
+            delay={380}
+            id="demo"
+            className="relative mt-16 w-full max-w-4xl scroll-mt-24 md:mt-20"
+          >
             <DashboardDemo />
           </Reveal>
         </div>
@@ -316,25 +320,6 @@ export default function LandingPage() {
               </div>
             </Reveal>
           </div>
-        </div>
-      </section>
-
-      {/* ============ Live demo ============ */}
-      <section id="demo" className="scroll-mt-24 py-24 md:py-32">
-        <div className="container">
-          <Reveal className="text-center">
-            <Eyebrow>Live demo</Eyebrow>
-            <h2 className="text-balance text-3xl font-semibold tracking-tight md:text-5xl">
-              Don&apos;t take our word for it
-            </h2>
-            <p className="mx-auto mt-4 max-w-lg text-muted-foreground">
-              This is the actual in-app game. Crash, and you&apos;ll meet the
-              idea that runs the whole product: answering brings you back.
-            </p>
-          </Reveal>
-          <Reveal delay={150} className="mt-12">
-            <DemoGame />
-          </Reveal>
         </div>
       </section>
 
