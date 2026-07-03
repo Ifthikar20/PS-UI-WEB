@@ -4,6 +4,7 @@ import { SiteHeader } from "@/components/marketing/site-header";
 import { SiteFooter } from "@/components/marketing/site-footer";
 import { Reveal } from "@/components/marketing/reveal";
 import { PhoneMock, BrowserMock } from "@/components/marketing/device-mocks";
+import { DashboardDemo } from "@/components/marketing/dashboard-demo";
 import { DemoGame } from "@/components/marketing/demo-game";
 import { GamesMarquee } from "@/components/marketing/games-marquee";
 import { GamesArsenal } from "@/components/marketing/games-arsenal";
@@ -226,9 +227,9 @@ export default function LandingPage() {
             </a>
           </Reveal>
 
-          {/* hero product shot */}
+          {/* hero product shot — the dashboard, playing itself */}
           <Reveal delay={380} className="relative mt-16 w-full max-w-4xl md:mt-20">
-            <BrowserMock />
+            <DashboardDemo />
           </Reveal>
         </div>
       </section>
