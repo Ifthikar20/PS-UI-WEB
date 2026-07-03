@@ -1,7 +1,6 @@
 import Link from "next/link";
 import { ArrowLeft } from "lucide-react";
 import { Pip } from "@/components/pip";
-import { ThemeToggle } from "@/components/theme-toggle";
 import {
   NotesGlyph,
   BirdGlyph,
@@ -22,7 +21,8 @@ export default function AuthLayout({
   children: React.ReactNode;
 }) {
   return (
-    <div className="flex min-h-screen bg-background p-3 md:p-4">
+    // Auth is light-only by design — force light tokens even in dark mode.
+    <div className="force-light flex min-h-screen bg-background text-foreground p-3 md:p-4">
       {/* Art panel — inset, rounded, brand-gradient fluid artwork. */}
       <aside className="relative hidden w-[52%] flex-col justify-between overflow-hidden rounded-[28px] p-10 text-white lg:flex xl:p-12">
         {/* fluid gradient artwork */}
@@ -82,9 +82,6 @@ export default function AuthLayout({
 
       {/* Form side */}
       <div className="relative flex flex-1 flex-col">
-        <div className="absolute right-2 top-2">
-          <ThemeToggle />
-        </div>
         <main className="flex flex-1 items-center justify-center px-4 py-12 sm:px-8">
           <div className="w-full max-w-md">
             {/* small screens keep the brand visible */}
