@@ -147,6 +147,7 @@ export type ExamPlan = {
   approvedAt: string | null;
   excludedTopics: string[];
   frequencyMultiplier: number;
+  emailReminders: boolean;
   createdAt: string;
   results: Record<string, { correct: number; total: number; completed?: boolean }>;
   progress?: { totalDays: number; completedDays: number };
@@ -185,6 +186,7 @@ export type ExamSettings = {
   frequencyMultiplier: number;
   excludedTopics: string[];
   questionsPerDay: number;
+  emailReminders: boolean;
 };
 
 export type Paginated<T> = {

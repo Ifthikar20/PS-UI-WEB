@@ -4,7 +4,8 @@ import * as React from "react";
 import { use } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { ArrowLeft, Loader2, Trash2 } from "lucide-react";
+import { ArrowLeft, Loader2, Trash2, Bell, Send, Check } from "lucide-react";
+import { useSession } from "@/components/app/session-provider";
 import { api } from "@/lib/api";
 import { useApi } from "@/lib/use-api";
 import { Button } from "@/components/ui/button";
@@ -33,17 +34,21 @@ export default function ExamSettingsPage({
 }) {
   const { id } = use(params);
   const router = useRouter();
+  const { me } = useSession();
   const plan = useApi<ExamPlan>(`examplans/${id}/`);
 
   const [freq, setFreq] = React.useState(1);
   const [excluded, setExcluded] = React.useState<string[]>([]);
+  const [emailReminders, setEmailReminders] = React.useState(true);
   const [saving, setSaving] = React.useState(false);
   const [msg, setMsg] = React.useState<string | null>(null);
+  const [testState, setTestState] = React.useState<"idle" | "sending" | "sent">("idle");
 
   React.useEffect(() => {
     if (plan.data) {
       setFreq(plan.data.frequencyMultiplier ?? 1);
       setExcluded(plan.data.excludedTopics ?? []);
+      setEmailReminders(plan.data.emailReminders ?? true);
     }
   }, [plan.data]);
 
@@ -71,12 +76,25 @@ export default function ExamSettingsPage({
       await api.patch(`examplans/${id}/settings/`, {
         frequencyMultiplier: freq,
         excludedTopics: excluded,
+        emailReminders,
       });
       setMsg("Saved — future days updated.");
     } catch {
       setMsg("Couldn't save.");
     } finally {
       setSaving(false);
+    }
+  }
+
+  async function sendTest() {
+    setTestState("sending");
+    try {
+      await api.post(`examplans/${id}/test-reminder/`, {});
+      setTestState("sent");
+      setTimeout(() => setTestState("idle"), 4000);
+    } catch {
+      setTestState("idle");
+      setMsg("Couldn't send test email.");
     }
   }
 
@@ -124,6 +142,66 @@ export default function ExamSettingsPage({
                 <div className="text-xs text-muted-foreground">{f.v}×</div>
               </button>
             ))}
+          </div>
+        </CardContent>
+      </Card>
+
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <Bell className="h-5 w-5 text-primary" /> Email reminders
+          </CardTitle>
+          <CardDescription>
+            We&apos;ll email a nudge when each day&apos;s session is ready, plus
+            a heads-up as your exam approaches — so a reminder reaches you even
+            when PlayStudy is closed.
+          </CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <button
+            onClick={() => setEmailReminders((v) => !v)}
+            className="flex w-full items-center justify-between rounded-xl border p-4 text-left transition-colors hover:bg-accent"
+          >
+            <div>
+              <div className="font-medium">Send me email reminders</div>
+              <div className="text-sm text-muted-foreground">
+                {me?.user.email ? `Delivered to ${me.user.email}` : "Uses your account email"}
+              </div>
+            </div>
+            <span
+              className={cn(
+                "relative h-6 w-11 shrink-0 rounded-full transition-colors",
+                emailReminders ? "bg-primary" : "bg-muted",
+              )}
+            >
+              <span
+                className={cn(
+                  "absolute top-0.5 h-5 w-5 rounded-full bg-white shadow transition-all",
+                  emailReminders ? "left-[22px]" : "left-0.5",
+                )}
+              />
+            </span>
+          </button>
+
+          <div className="flex flex-wrap items-center gap-3">
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={sendTest}
+              disabled={testState !== "idle"}
+            >
+              {testState === "sending" ? (
+                <Loader2 className="h-4 w-4 animate-spin" />
+              ) : testState === "sent" ? (
+                <Check className="h-4 w-4 text-green-600" />
+              ) : (
+                <Send className="h-4 w-4" />
+              )}
+              {testState === "sent" ? "Sent — check your inbox" : "Send me a test reminder"}
+            </Button>
+            <span className="text-xs text-muted-foreground">
+              Confirms delivery works for your address.
+            </span>
           </div>
         </CardContent>
       </Card>
