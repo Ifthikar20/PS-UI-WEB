@@ -3,9 +3,10 @@ import { cn } from "@/lib/utils";
 
 /**
  * Minimal, dependency-free Markdown renderer tuned for study notes.
- * Supports: # ## ### headings, **bold**, *italic*, ==highlight==, `code`,
- * [links](url), > blockquotes, and - / 1. lists. Content is HTML-escaped
- * before any inline formatting is applied, so it is safe to render.
+ * Supports: # ## ### headings, **bold**, *italic*, ++underline++,
+ * ==highlight==, `code`, [links](url), > blockquotes, and - / 1. lists.
+ * Content is HTML-escaped before any inline formatting is applied, so it is
+ * safe to render.
  */
 function escapeHtml(s: string): string {
   return s
@@ -22,6 +23,8 @@ function inline(text: string): string {
     '<a href="$2" target="_blank" rel="noreferrer" class="text-primary underline underline-offset-2">$1</a>',
   );
   t = t.replace(/==([^=]+)==/g, '<mark class="rounded bg-accent2/25 px-1 text-foreground">$1</mark>');
+  // ++underline++ — an emphasis markdown lacks natively but study notes want.
+  t = t.replace(/\+\+([^+]+)\+\+/g, '<u class="underline decoration-2 underline-offset-2">$1</u>');
   t = t.replace(/\*\*([^*]+)\*\*/g, "<strong>$1</strong>");
   t = t.replace(/(^|[^*])\*([^*]+)\*/g, "$1<em>$2</em>");
   t = t.replace(/_([^_]+)_/g, "<em>$1</em>");

@@ -66,7 +66,13 @@ export type QuizQuestion = {
   difficulty?: string;
 };
 
-export type StudySection = { title: string; content: string; order: number };
+export type StudySection = {
+  title: string;
+  content: string;
+  order: number;
+  /** Hierarchy depth for the learning tree: 0=topic, 1=subtopic, 2=sub-sub. */
+  level?: number;
+};
 
 export type WordChallenge = { word: string; clue: string };
 
@@ -95,6 +101,8 @@ export type StudySet = {
   keyPoints?: string[];
   topics?: string[];
   sections: StudySection[];
+  /** The source material as extracted — the original document flow. */
+  originalText?: string;
   quiz: QuizQuestion[];
   wordGame: WordChallenge[];
   preview?: StudyPreview;

@@ -3,7 +3,15 @@
 import * as React from "react";
 import { use } from "react";
 import Link from "next/link";
-import { ArrowLeft, Gamepad2, Check, Loader2, Sparkles } from "lucide-react";
+import {
+  ArrowLeft,
+  Gamepad2,
+  Check,
+  Loader2,
+  Sparkles,
+  Pencil,
+  FileText,
+} from "lucide-react";
 import { api, ApiError } from "@/lib/api";
 import { Progress } from "@/components/ui/progress";
 import { useStudyHeartbeat } from "@/lib/use-heartbeat";
@@ -25,6 +33,7 @@ import { ReaderToolbar } from "@/components/study/reader-toolbar";
 import { LearningTreeGraph } from "@/components/study/learning-tree-graph";
 import { MarginNotes } from "@/components/study/margin-notes";
 import { SectionQuizModal } from "@/components/study/section-quiz-modal";
+import { SectionEditor } from "@/components/study/section-editor";
 import type { StudySet, StudySection, StudySetStatus } from "@/lib/types";
 
 /**
@@ -66,7 +75,7 @@ function useLiveStudySet(id: string) {
     };
   }, [id]);
 
-  return { set, status, loading, error };
+  return { set, setSet, status, loading, error };
 }
 
 function useProgress(id: string, count: number) {
@@ -105,8 +114,9 @@ export default function StudySetPage({
   params: Promise<{ id: string }>;
 }) {
   const { id } = use(params);
-  const { set, status, loading, error } = useLiveStudySet(id);
+  const { set, setSet, status, loading, error } = useLiveStudySet(id);
   const reading = useSyncedReading();
+  const [editIndex, setEditIndex] = React.useState<number | null>(null);
   const generating =
     !!set && set.status !== "ready" && set.status !== "failed";
 
@@ -255,10 +265,25 @@ export default function StudySetPage({
           <TabsTrigger value="read">Read</TabsTrigger>
           <TabsTrigger value="path">Learning tree</TabsTrigger>
           <TabsTrigger value="quiz">Quiz ({set.quiz?.length ?? 0})</TabsTrigger>
+          {set.originalText && <TabsTrigger value="original">Original</TabsTrigger>}
         </TabsList>
 
         <TabsContent value="read" className="space-y-4">
           <ReaderToolbar {...reading} />
+
+          {/* Contents: a live map of what you've learned so far. */}
+          {sections.length > 0 && (
+            <ContentsPreview
+              sections={sections}
+              done={done}
+              onJump={(i) =>
+                sectionRefs.current[i]?.scrollIntoView({
+                  behavior: "smooth",
+                  block: "start",
+                })
+              }
+            />
+          )}
 
           {set.summary && (
             <Card>
@@ -280,6 +305,30 @@ export default function StudySetPage({
           {sections.map((section, i) => {
             const isDone = done.has(i);
             const paper = PAPER_CLASS[reading.paper];
+            const level = Math.max(0, Math.min(2, section.level ?? 0));
+            if (editIndex === i) {
+              return (
+                <div
+                  key={i}
+                  ref={(el) => {
+                    sectionRefs.current[i] = el;
+                  }}
+                  className="scroll-mt-24"
+                  style={{ marginLeft: level * 20 }}
+                >
+                  <SectionEditor
+                    studySetId={id}
+                    index={i}
+                    section={section}
+                    onSaved={(updated) => {
+                      setSet(updated);
+                      setEditIndex(null);
+                    }}
+                    onCancel={() => setEditIndex(null)}
+                  />
+                </div>
+              );
+            }
             return (
               <Card
                 key={i}
@@ -291,19 +340,40 @@ export default function StudySetPage({
                   paper.card,
                   isDone && "border-green-500/40",
                 )}
+                style={{ marginLeft: level * 20 }}
               >
                 {/* paper sheet: style picked in the toolbar (ruled with a red
                     margin, graph grid, plain warm paper, or pure white) */}
                 <CardContent className={cn("p-0", paper.sheet)}>
                   <div className={paper.pad}>
                     <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
-                      <h2 className="text-lg font-semibold leading-8">
-                        <span className="mr-2 text-muted-foreground/60">
-                          {i + 1}.
+                      <h2 className="flex items-center gap-2 text-lg font-semibold leading-8">
+                        {level > 0 && (
+                          <span className="rounded bg-secondary px-1.5 py-0.5 text-[10px] font-medium uppercase tracking-wide text-muted-foreground">
+                            {level === 1 ? "Subtopic" : "Detail"}
+                          </span>
+                        )}
+                        <span>
+                          <span className="mr-2 text-muted-foreground/60">
+                            {i + 1}.
+                          </span>
+                          {section.title}
                         </span>
-                        {section.title}
+                        {isDone && (
+                          <span className="inline-flex items-center gap-1 rounded-full bg-green-500/15 px-2 py-0.5 text-[11px] font-semibold text-green-600">
+                            <Check className="h-3 w-3" /> Learned
+                          </span>
+                        )}
                       </h2>
                       <div className="flex items-center gap-1.5">
+                        <Button
+                          size="sm"
+                          variant="ghost"
+                          onClick={() => setEditIndex(i)}
+                          className="text-muted-foreground"
+                        >
+                          <Pencil className="h-4 w-4" /> Edit
+                        </Button>
                         <Button
                           size="sm"
                           variant="outline"
@@ -393,6 +463,42 @@ export default function StudySetPage({
         <TabsContent value="quiz">
           <Quiz questions={set.quiz ?? []} studySetId={set.id} />
         </TabsContent>
+
+        {set.originalText && (
+          <TabsContent value="original">
+            <Card>
+              <CardContent className="p-6">
+                <div className="mb-3 flex items-center gap-2">
+                  <FileText className="h-4 w-4 text-muted-foreground" />
+                  <div>
+                    <div className="text-sm font-semibold">
+                      Original document
+                    </div>
+                    <div className="text-xs text-muted-foreground">
+                      The source exactly as uploaded — same wording, same flow.
+                      {set.sourceKind === "link" && set.sourceRef && (
+                        <>
+                          {" "}
+                          <a
+                            href={set.sourceRef}
+                            target="_blank"
+                            rel="noreferrer"
+                            className="text-primary underline underline-offset-2"
+                          >
+                            Open source
+                          </a>
+                        </>
+                      )}
+                    </div>
+                  </div>
+                </div>
+                <pre className="max-h-[70vh] overflow-auto whitespace-pre-wrap rounded-lg border bg-muted/30 p-4 font-serif text-[15px] leading-relaxed text-foreground/90">
+                  {set.originalText}
+                </pre>
+              </CardContent>
+            </Card>
+          </TabsContent>
+        )}
       </Tabs>
 
       {quizIndex != null && sections[quizIndex] && (
@@ -404,5 +510,75 @@ export default function StudySetPage({
         />
       )}
     </div>
+  );
+}
+
+/**
+ * A compact table of contents that doubles as a progress tracker: every
+ * section, indented by its level, with a completion check the moment it's
+ * done — so you can see everything you've learned so far at a glance.
+ */
+function ContentsPreview({
+  sections,
+  done,
+  onJump,
+}: {
+  sections: StudySection[];
+  done: Set<number>;
+  onJump: (i: number) => void;
+}) {
+  const total = sections.length;
+  const completed = sections.filter((_, i) => done.has(i)).length;
+  return (
+    <Card>
+      <CardContent className="p-4">
+        <div className="mb-2 flex items-center justify-between">
+          <div className="text-sm font-semibold">Contents</div>
+          <div className="inline-flex items-center gap-1.5 text-xs text-muted-foreground">
+            <Check className="h-3.5 w-3.5 text-green-600" />
+            {completed} of {total} learned
+          </div>
+        </div>
+        <ol className="space-y-0.5">
+          {sections.map((s, i) => {
+            const isDone = done.has(i);
+            const level = Math.max(0, Math.min(2, s.level ?? 0));
+            return (
+              <li key={i} style={{ paddingLeft: level * 18 }}>
+                <button
+                  onClick={() => onJump(i)}
+                  className="flex w-full items-center gap-2 rounded-md px-2 py-1.5 text-left text-sm transition-colors hover:bg-accent"
+                >
+                  <span
+                    className={cn(
+                      "flex h-5 w-5 shrink-0 items-center justify-center rounded-full text-[10px] font-semibold",
+                      isDone
+                        ? "bg-green-500 text-white"
+                        : "border text-muted-foreground",
+                    )}
+                  >
+                    {isDone ? <Check className="h-3 w-3" /> : i + 1}
+                  </span>
+                  <span
+                    className={cn(
+                      "truncate",
+                      level > 0 && "text-[13px] text-muted-foreground",
+                      isDone && "text-foreground",
+                    )}
+                  >
+                    {s.title}
+                  </span>
+                  {isDone && (
+                    <span className="ml-auto shrink-0 text-[10px] font-semibold uppercase tracking-wide text-green-600">
+                      Done
+                    </span>
+                  )}
+                </button>
+              </li>
+            );
+          })}
+        </ol>
+      </CardContent>
+    </Card>
   );
 }
