@@ -2,7 +2,7 @@
 
 import * as React from "react";
 import { useRouter } from "next/navigation";
-import { GraduationCap, School, BookOpen, ArrowRight, Check } from "lucide-react";
+import { ArrowRight, ArrowLeft, Check } from "lucide-react";
 import { Pip } from "@/components/pip";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
@@ -15,35 +15,52 @@ import {
   type Flavor,
 } from "@/lib/flavor";
 
+/**
+ * Sign-up questionnaire — the interactive front door of the learning platform.
+ * Three quick steps: a welcome that says what PlayStudy does, a level pick
+ * (big, colorful cards that live-preview the dashboard flavor), and — for
+ * college — a vibe pick. Progress dots up top; skipping is always allowed.
+ */
+
 const LEVELS: {
   value: EduLevel;
   title: string;
   sub: string;
-  icon: typeof School;
+  emoji: string;
+  tile: string; // emoji tile background
 }[] = [
   {
     value: "school",
     title: "High school or younger",
-    sub: "A bright, playful, game-first experience.",
-    icon: School,
+    sub: "Bright, playful, and game-first.",
+    emoji: "🎈",
+    tile: "bg-violet-500/15",
   },
   {
     value: "college",
     title: "College",
-    sub: "A clean, focused dashboard with a study timer.",
-    icon: BookOpen,
+    sub: "Clean and focused, with a study timer.",
+    emoji: "🎯",
+    tile: "bg-primary/15",
   },
   {
     value: "university",
     title: "University & above",
     sub: "A refined, professional workspace.",
-    icon: GraduationCap,
+    emoji: "🎓",
+    tile: "bg-amber-500/15",
   },
+];
+
+const VALUE_PROPS: { emoji: string; title: string; sub: string }[] = [
+  { emoji: "📚", title: "Notes in", sub: "Paste notes, links, or PDFs" },
+  { emoji: "🎮", title: "Games out", sub: "Your material becomes the arcade" },
+  { emoji: "🏆", title: "Progress up", sub: "Scores, streaks, and ranks" },
 ];
 
 export default function OnboardingPage() {
   const router = useRouter();
-  const [step, setStep] = React.useState<1 | 2>(1);
+  const [step, setStep] = React.useState<0 | 1 | 2>(0);
   const [level, setLevel] = React.useState<EduLevel | null>(null);
   const [pink, setPink] = React.useState(false);
 
@@ -55,66 +72,125 @@ export default function OnboardingPage() {
     if (previewFlavor) document.documentElement.dataset.flavor = previewFlavor;
   }, [previewFlavor]);
 
-  function pickLevel(value: EduLevel) {
-    setLevel(value);
-    if (value === "college") {
-      setStep(2);
-    } else {
-      finish(flavorForLevel(value));
-    }
-  }
-
   function finish(flavor: Flavor) {
     writeFlavorCookie(flavor);
     router.push("/dashboard");
     router.refresh();
   }
 
+  function continueFromLevel() {
+    if (!level) return;
+    if (level === "college") setStep(2);
+    else finish(flavorForLevel(level));
+  }
+
+  const steps = level === "college" ? 3 : 2;
+
   return (
     <Card className="w-full max-w-2xl animate-fade-in p-8">
-      <div className="mb-6 flex items-center gap-3">
-        <span className="rounded-2xl bg-primary/10 p-2">
-          <Pip size={40} />
-        </span>
-        <div>
-          <h1 className="text-xl font-bold">Let&apos;s set up your space</h1>
-          <p className="text-sm text-muted-foreground">
-            We&apos;ll tailor your dashboard to fit you.
-          </p>
-        </div>
+      {/* progress dots */}
+      <div className="mb-6 flex items-center justify-center gap-2">
+        {Array.from({ length: steps }).map((_, i) => (
+          <span
+            key={i}
+            className={cn(
+              "h-2 rounded-full transition-all duration-300",
+              i === step ? "w-8 bg-primary" : "w-2 bg-border",
+              i < step && "bg-primary/50",
+            )}
+          />
+        ))}
       </div>
 
+      {step === 0 && (
+        <div className="text-center">
+          <div className="mx-auto mb-4 flex h-24 w-24 items-center justify-center rounded-3xl bg-primary/10">
+            <Pip size={72} />
+          </div>
+          <h1 className="text-2xl font-bold md:text-3xl">
+            Make studying feel like play
+          </h1>
+          <p className="mx-auto mt-2 max-w-md text-muted-foreground">
+            Pip turns your notes into study sets, quizzes, and arcade games —
+            so practice actually happens.
+          </p>
+          <div className="mt-6 grid gap-3 sm:grid-cols-3">
+            {VALUE_PROPS.map((v) => (
+              <div key={v.title} className="rounded-2xl border bg-background p-4">
+                <div className="text-3xl">{v.emoji}</div>
+                <div className="mt-2 font-semibold">{v.title}</div>
+                <div className="mt-0.5 text-xs text-muted-foreground">{v.sub}</div>
+              </div>
+            ))}
+          </div>
+          <Button
+            size="lg"
+            className="mt-6 w-full text-base sm:w-auto sm:px-10"
+            onClick={() => setStep(1)}
+          >
+            Get started <ArrowRight className="h-5 w-5" />
+          </Button>
+        </div>
+      )}
+
       {step === 1 && (
-        <div className="space-y-3">
-          <p className="text-sm font-medium">Where are you in your studies?</p>
-          {LEVELS.map((l) => (
-            <button
-              key={l.value}
-              onClick={() => pickLevel(l.value)}
-              className={cn(
-                "flex w-full items-center gap-4 rounded-xl border p-4 text-left transition-colors hover:bg-accent",
-                level === l.value && "border-primary ring-1 ring-primary",
-              )}
-            >
-              <span className="flex h-11 w-11 items-center justify-center rounded-xl bg-secondary">
-                <l.icon className="h-5 w-5" />
-              </span>
-              <span className="flex-1">
-                <span className="block font-semibold">{l.title}</span>
-                <span className="block text-sm text-muted-foreground">
-                  {l.sub}
-                </span>
-              </span>
-              <ArrowRight className="h-4 w-4 text-muted-foreground" />
-            </button>
-          ))}
+        <div>
+          <h1 className="text-xl font-bold md:text-2xl">What describes you best?</h1>
+          <p className="mt-1 text-sm text-muted-foreground">
+            We&apos;ll shape your whole dashboard around this — watch the colors
+            change as you pick. You can switch anytime in Settings.
+          </p>
+          <div className="mt-5 grid gap-3 sm:grid-cols-3">
+            {LEVELS.map((l) => {
+              const selected = level === l.value;
+              return (
+                <button
+                  key={l.value}
+                  onClick={() => setLevel(l.value)}
+                  className={cn(
+                    "group rounded-2xl border p-5 text-left transition-all hover:-translate-y-0.5 hover:border-primary/50 hover:shadow-md",
+                    selected && "border-primary ring-2 ring-primary",
+                  )}
+                >
+                  <div className="flex items-start justify-between">
+                    <span
+                      className={cn(
+                        "flex h-16 w-16 items-center justify-center rounded-2xl text-4xl transition-transform group-hover:scale-110",
+                        l.tile,
+                      )}
+                    >
+                      {l.emoji}
+                    </span>
+                    {selected && (
+                      <span className="flex h-6 w-6 items-center justify-center rounded-full bg-primary text-primary-foreground">
+                        <Check className="h-4 w-4" />
+                      </span>
+                    )}
+                  </div>
+                  <div className="mt-3 font-semibold leading-tight">{l.title}</div>
+                  <div className="mt-1 text-sm text-muted-foreground">{l.sub}</div>
+                </button>
+              );
+            })}
+          </div>
+          <div className="mt-6 flex items-center gap-3">
+            <Button variant="outline" onClick={() => setStep(0)}>
+              <ArrowLeft className="h-4 w-4" /> Back
+            </Button>
+            <Button className="flex-1" size="lg" disabled={!level} onClick={continueFromLevel}>
+              Continue <ArrowRight className="h-5 w-5" />
+            </Button>
+          </div>
         </div>
       )}
 
       {step === 2 && (
-        <div className="space-y-4">
-          <p className="text-sm font-medium">Pick your vibe</p>
-          <div className="grid gap-3 sm:grid-cols-2">
+        <div>
+          <h1 className="text-xl font-bold md:text-2xl">Pick your vibe</h1>
+          <p className="mt-1 text-sm text-muted-foreground">
+            Same focused layout — two palettes. Live-previewing as you choose.
+          </p>
+          <div className="mt-5 grid gap-3 sm:grid-cols-2">
             {(["focus", "rose"] as Flavor[]).map((f) => {
               const meta = FLAVOR_META[f];
               const selected = (f === "rose") === pink;
@@ -123,31 +199,34 @@ export default function OnboardingPage() {
                   key={f}
                   onClick={() => setPink(f === "rose")}
                   className={cn(
-                    "rounded-xl border p-5 text-left transition-colors hover:bg-accent",
-                    selected && "border-primary ring-1 ring-primary",
+                    "rounded-2xl border p-6 text-left transition-all hover:-translate-y-0.5 hover:shadow-md",
+                    selected && "border-primary ring-2 ring-primary",
                   )}
                 >
                   <div className="flex items-center justify-between">
-                    <span className="text-2xl">{meta.emoji}</span>
-                    {selected && <Check className="h-4 w-4 text-primary" />}
+                    <span className="text-4xl">{meta.emoji}</span>
+                    {selected && (
+                      <span className="flex h-6 w-6 items-center justify-center rounded-full bg-primary text-primary-foreground">
+                        <Check className="h-4 w-4" />
+                      </span>
+                    )}
                   </div>
-                  <div className="mt-2 font-semibold">{meta.label}</div>
-                  <div className="text-sm text-muted-foreground">
-                    {meta.blurb}
-                  </div>
+                  <div className="mt-3 text-lg font-semibold">{meta.label}</div>
+                  <div className="text-sm text-muted-foreground">{meta.blurb}</div>
                 </button>
               );
             })}
           </div>
-          <div className="flex gap-3 pt-2">
+          <div className="mt-6 flex gap-3">
             <Button variant="outline" onClick={() => setStep(1)}>
-              Back
+              <ArrowLeft className="h-4 w-4" /> Back
             </Button>
             <Button
               className="flex-1"
+              size="lg"
               onClick={() => finish(flavorForLevel("college", pink))}
             >
-              Enter PlayStudy <ArrowRight className="h-4 w-4" />
+              Enter PlayStudy <ArrowRight className="h-5 w-5" />
             </Button>
           </div>
         </div>

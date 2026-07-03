@@ -20,7 +20,8 @@ export default function GamesPage() {
         <div>
           <h1 className="text-2xl font-bold tracking-tight md:text-3xl">Arcade</h1>
           <p className="mt-0.5 text-muted-foreground">
-            Play your study set as a game — each one shows its controls below.
+            Every game practices your study set — play rounds, beat your best,
+            and the material sticks.
           </p>
         </div>
       </div>

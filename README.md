@@ -5,6 +5,9 @@ sets, quizzes, and games. Built with Next.js (App Router), TypeScript, Tailwind
 CSS, and shadcn-style components. Airbnb-clean, two-color (white/black) light &
 dark theme.
 
+> 📖 **[Product guide](docs/PRODUCT.md)** — the full web + mobile flows,
+> every feature with screenshots, and how the clients stay in sync.
+
 ## Architecture
 
 ```
