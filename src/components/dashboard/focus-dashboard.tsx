@@ -7,7 +7,6 @@ import { useSession } from "@/components/app/session-provider";
 import { asList } from "@/lib/use-api";
 import type { GameManifestEntry } from "@/lib/types";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import { StudySetCard } from "@/components/app/study-set-card";
 import { GameCard } from "@/components/app/game-card";
@@ -18,7 +17,8 @@ import { ActivityOverview } from "@/components/charts/activity-overview";
 import { ExamReminder } from "@/components/exam/exam-reminder";
 import {
   useDashboardData,
-  greeting,
+  DashboardHero,
+  CountUp,
   SectionHeader,
   StatTile,
   CardGridSkeleton,
@@ -37,21 +37,7 @@ export function FocusDashboard() {
 
   return (
     <div className="mx-auto max-w-6xl space-y-8">
-      <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
-        <div>
-          <h1 className="text-2xl font-bold tracking-tight md:text-3xl">
-            {greeting(me?.user.name)}
-          </h1>
-          <p className="mt-1 text-muted-foreground">
-            Stay focused — a little every day goes a long way.
-          </p>
-        </div>
-        <Button asChild>
-          <Link href="/study/new">
-            <Plus className="h-4 w-4" /> New study set
-          </Link>
-        </Button>
-      </div>
+      <DashboardHero name={me?.user.name} />
 
       <ExamReminder />
 
@@ -62,37 +48,34 @@ export function FocusDashboard() {
         <StatTile
           icon={<DoodleStar className="h-7 w-7" />}
           label="Points"
-          value={rewards ? rewards.points.toLocaleString() : "—"}
+          value={rewards ? <CountUp value={rewards.points} /> : "—"}
         />
         <StatTile
           icon={<DoodleFlame className="h-7 w-7" />}
           label="Day streak"
-          value={rewards ? String(rewards.streak) : "—"}
+          value={rewards ? <CountUp value={rewards.streak} /> : "—"}
         />
+        {/* Rank + progress-to-next live in one tile, not a whole row */}
         <StatTile
           icon={<DoodleTrophy className="h-7 w-7" />}
           label="Rank"
           value={rewards ? rewards.rank.name : "—"}
+          sub={
+            rewards?.nextRank ? (
+              <>
+                <Progress
+                  className="h-1.5"
+                  value={Math.round((rewards.rankProgress || 0) * 100)}
+                />
+                <div className="mt-1 text-xs text-muted-foreground">
+                  {rewards.pointsToNextRank.toLocaleString()} pts to{" "}
+                  {rewards.nextRank.name}
+                </div>
+              </>
+            ) : undefined
+          }
         />
       </div>
-
-      {rewards?.nextRank && (
-        <Card>
-          <CardContent className="p-6">
-            <div className="flex items-center justify-between text-sm">
-              <span className="font-medium">{rewards.rank.name}</span>
-              <span className="text-muted-foreground">
-                {rewards.pointsToNextRank.toLocaleString()} points to{" "}
-                {rewards.nextRank.name}
-              </span>
-            </div>
-            <Progress
-              className="mt-3"
-              value={Math.round((rewards.rankProgress || 0) * 100)}
-            />
-          </CardContent>
-        </Card>
-      )}
 
       <ActivityOverview />
 

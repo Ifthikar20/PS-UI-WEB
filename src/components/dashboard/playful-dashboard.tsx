@@ -6,7 +6,6 @@ import { DoodleStar, DoodleFlame } from "@/components/doodles";
 import { useSession } from "@/components/app/session-provider";
 import { asList } from "@/lib/use-api";
 import type { GameManifestEntry } from "@/lib/types";
-import { Pip } from "@/components/pip";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
@@ -16,7 +15,8 @@ import { EmptyState } from "@/components/app/empty-state";
 import { ExamReminder } from "@/components/exam/exam-reminder";
 import {
   useDashboardData,
-  greeting,
+  DashboardHero,
+  CountUp,
   SectionHeader,
   CardGridSkeleton,
 } from "./shared";
@@ -32,26 +32,7 @@ export function PlayfulDashboard() {
   return (
     <div className="mx-auto max-w-6xl space-y-8">
       {/* Big friendly hero with Pip */}
-      <Card className="brand-wash overflow-hidden border-2">
-        <CardContent className="flex flex-col items-center gap-6 p-8 text-center sm:flex-row sm:text-left">
-          <span className="rounded-[2rem] bg-background/70 p-3 shadow-sm">
-            <Pip size={84} />
-          </span>
-          <div className="flex-1">
-            <h1 className="text-2xl font-bold tracking-tight md:text-3xl">
-              {greeting(me?.user.name)}
-            </h1>
-            <p className="mt-1 text-muted-foreground">
-              Ready to learn something new today?
-            </p>
-          </div>
-          <Button size="lg" asChild>
-            <Link href="/study/new">
-              <Plus className="h-5 w-5" /> New study set
-            </Link>
-          </Button>
-        </CardContent>
-      </Card>
+      <DashboardHero name={me?.user.name} big />
 
       <ExamReminder />
 
@@ -63,7 +44,7 @@ export function PlayfulDashboard() {
             <div>
               <div className="text-sm">Points</div>
               <div className="text-2xl font-extrabold">
-                {rewards ? rewards.points.toLocaleString() : "—"}
+                {rewards ? <CountUp value={rewards.points} /> : "—"}
               </div>
             </div>
           </CardContent>
@@ -74,42 +55,40 @@ export function PlayfulDashboard() {
             <div>
               <div className="text-sm">Streak</div>
               <div className="text-2xl font-extrabold">
-                {rewards?.streak ?? 0} day{(rewards?.streak ?? 0) === 1 ? "" : "s"}
+                {rewards ? <CountUp value={rewards.streak} /> : "—"}
+                {" day"}
+                {(rewards?.streak ?? 0) === 1 ? "" : "s"}
               </div>
             </div>
           </CardContent>
         </Card>
+        {/* Rank + progress-to-next in one card, not a whole extra row */}
         <Card className="border-none bg-pastel-sky text-black">
-          <CardContent className="flex items-center gap-4 p-6">
-            <Sparkles className="h-8 w-8" />
-            <div>
-              <div className="text-sm">Rank</div>
-              <div className="text-2xl font-extrabold">
-                {rewards ? rewards.rank.name : "—"}
+          <CardContent className="p-6">
+            <div className="flex items-center gap-4">
+              <Sparkles className="h-8 w-8" />
+              <div className="min-w-0 flex-1">
+                <div className="text-sm">Rank</div>
+                <div className="truncate text-2xl font-extrabold">
+                  {rewards ? rewards.rank.name : "—"}
+                </div>
               </div>
             </div>
+            {rewards?.nextRank && (
+              <>
+                <Progress
+                  className="mt-3 h-2 bg-black/10"
+                  value={Math.round((rewards.rankProgress || 0) * 100)}
+                />
+                <p className="mt-1.5 text-xs text-black/60">
+                  {rewards.pointsToNextRank.toLocaleString()} pts to{" "}
+                  {rewards.nextRank.name}
+                </p>
+              </>
+            )}
           </CardContent>
         </Card>
       </div>
-
-      {rewards?.nextRank && (
-        <Card className="border-2">
-          <CardContent className="p-6">
-            <div className="flex items-center justify-between text-sm font-semibold">
-              <span>{rewards.rank.name}</span>
-              <span className="text-muted-foreground">{rewards.nextRank.name}</span>
-            </div>
-            <Progress
-              className="mt-3 h-3"
-              value={Math.round((rewards.rankProgress || 0) * 100)}
-            />
-            <p className="mt-2 text-sm text-muted-foreground">
-              {rewards.pointsToNextRank.toLocaleString()} points to{" "}
-              {rewards.nextRank.name}
-            </p>
-          </CardContent>
-        </Card>
-      )}
 
       {/* Games front and center */}
       <section>
