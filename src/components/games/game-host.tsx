@@ -4,6 +4,7 @@ import * as React from "react";
 import Link from "next/link";
 import { RotateCcw, Gamepad2, BookOpen, Trophy, Star, Zap } from "lucide-react";
 import { api } from "@/lib/api";
+import { useSession } from "@/components/app/session-provider";
 import { gameBundleUrl, payloadFromStudySet } from "@/lib/games";
 import { GamePoster } from "@/components/games/posters";
 import { Button } from "@/components/ui/button";
@@ -49,6 +50,7 @@ export function GameHost({
 }) {
   const iframeRef = React.useRef<HTMLIFrameElement>(null);
   const sessionId = React.useRef<string | null>(null);
+  const { refresh } = useSession();
   const payload = React.useMemo(
     () => payloadFromStudySet(studySet),
     [studySet],
@@ -73,6 +75,7 @@ export function GameHost({
   const [best, setBest] = React.useState(0);
   const [newBest, setNewBest] = React.useState(false);
   const [pulse, setPulse] = React.useState(false);
+  const [earned, setEarned] = React.useState<number | null>(null);
 
   // Load the local personal best once the set is known.
   React.useEffect(() => {
@@ -161,9 +164,20 @@ export function GameHost({
             return prev;
           });
           if (sessionId.current) {
+            // The server converts the score into profile points (proportional
+            // to the game's target — see docs/SCORING.md) and reports back
+            // what this run earned.
             api
-              .post(`games/sessions/${sessionId.current}/complete/`, { score: n })
-              .catch(() => {});
+              .post<{ pointsEarned?: number }>(
+                `games/sessions/${sessionId.current}/complete/`,
+                { score: n },
+              )
+              .then((res) => {
+                const pts = Number(res?.pointsEarned) || 0;
+                setEarned(pts);
+                if (pts > 0) refresh(); // update the topbar points pill
+              })
+              .catch(() => setEarned(null));
           }
           break;
         }
@@ -181,12 +195,13 @@ export function GameHost({
     }
     window.addEventListener("message", onMessage);
     return () => window.removeEventListener("message", onMessage);
-  }, [game.key, game.version, injectInit, studySet?.id]);
+  }, [game.key, game.version, injectInit, studySet?.id, refresh]);
 
   // Next round: remount the iframe (fresh run), keep the best-score target.
   const nextRound = React.useCallback(() => {
     setScore(0);
     setNewBest(false);
+    setEarned(null);
     setStatus("loading");
     setRound((r) => r + 1);
   }, []);
@@ -263,6 +278,12 @@ export function GameHost({
                   </div>
                 </div>
               </div>
+              {/* What this run just added to the profile (server-confirmed) */}
+              {earned !== null && earned > 0 && (
+                <div className="mt-4 inline-flex items-center gap-1.5 rounded-full bg-accent-2/10 px-3 py-1.5 text-sm font-semibold text-accent-2">
+                  <Star className="h-4 w-4" /> +{earned} pts added to your profile
+                </div>
+              )}
               <p className="mt-3 text-sm text-muted-foreground">
                 {newBest
                   ? "You raised the bar — can you defend it?"

@@ -126,6 +126,10 @@ export type GameManifestEntry = {
   requires?: string[];
   minAppVersion?: string;
   sdkVersion?: string;
+  /** Target score: a great run scores this many in-game points. */
+  maxScore?: number;
+  /** Profile points earned for hitting maxScore (proportional below it). */
+  rewardCap?: number;
 };
 
 export type ExamStatus =

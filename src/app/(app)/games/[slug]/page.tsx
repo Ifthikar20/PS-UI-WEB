@@ -11,6 +11,7 @@ import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { GameHost } from "@/components/games/game-host";
 import { GameControls } from "@/components/games/controls";
+import { ScoringPanel } from "@/components/games/scoring-panel";
 import type { GameManifestEntry, StudySet, Paginated } from "@/lib/types";
 
 const GAMES_BASE_URL =
@@ -107,6 +108,8 @@ export default function GameDetailPage({
             studySet={studySet}
             gamesBaseUrl={GAMES_BASE_URL}
           />
+          {/* Per-game scoring: rules + what a run is worth on your profile */}
+          <ScoringPanel game={game} setId={studySet?.id} />
           {/* Per-game controls */}
           <div className="rounded-xl border bg-card p-4">
             <div className="mb-2 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
