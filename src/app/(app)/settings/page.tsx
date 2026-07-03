@@ -17,6 +17,7 @@ import { cn } from "@/lib/utils";
 import { useFlavor } from "@/components/app/flavor-provider";
 import { DoodleSpark, DoodleClock } from "@/components/doodles";
 import { FLAVORS, FLAVOR_META } from "@/lib/flavor";
+import { SupervisionCard } from "@/components/app/supervision-card";
 
 type Subscription = {
   isPremium: boolean;
@@ -253,6 +254,8 @@ export default function SettingsPage() {
           </div>
         </CardContent>
       </Card>
+
+      <SupervisionCard />
 
       <PlanAndSpending />
     </div>

@@ -222,3 +222,23 @@ export type ActivityAnalytics = {
     createdAt: string;
   }[];
 };
+
+/** Supervisor channel (schools): guardian links + pushed content. */
+export type GuardianStatus = {
+  isParent: boolean;
+  children: { linkId: number; id: string; name: string; email: string }[];
+  parents: { linkId: number; id: string; name: string; email: string }[];
+};
+
+export type Assignment = {
+  id: number;
+  studySetId: string;
+  title: string;
+  note: string;
+  createdAt: string;
+  openedAt: string | null;
+  sectionsTotal: number;
+  sectionsCompleted: number;
+  student?: { id: string; name: string };
+  supervisor?: { id: string; name: string };
+};

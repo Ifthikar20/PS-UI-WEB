@@ -5,6 +5,7 @@ import { FileText, Plus } from "lucide-react";
 import { useApi, asList } from "@/lib/use-api";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { AssignedRail } from "@/components/app/assigned-rail";
 import { Skeleton } from "@/components/ui/skeleton";
 import { StudySetCard } from "@/components/app/study-set-card";
 import { GameCard } from "@/components/app/game-card";
@@ -29,6 +30,8 @@ export default function LibraryPage() {
           </Link>
         </Button>
       </div>
+
+      <AssignedRail />
 
       <Tabs defaultValue="sets">
         <TabsList>

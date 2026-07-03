@@ -5,6 +5,7 @@ import {
   CalendarCheck,
   LineChart,
   Trophy,
+  Users,
   type LucideIcon,
 } from "lucide-react";
 
@@ -16,5 +17,6 @@ export const NAV_ITEMS: NavItem[] = [
   { label: "Games", href: "/games", icon: Gamepad2 },
   { label: "Exam Prep", href: "/exam", icon: CalendarCheck },
   { label: "Activity", href: "/activity", icon: LineChart },
+  { label: "Supervise", href: "/supervise", icon: Users },
   { label: "Rewards", href: "/rewards", icon: Trophy },
 ];
