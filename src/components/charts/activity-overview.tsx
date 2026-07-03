@@ -131,7 +131,7 @@ function BarChart({ points }: { points: HistoryPoint[] }) {
     <div className="flex h-36 items-end gap-1.5">
       {points.map((p, i) => {
         const h = (p.points / max) * 100;
-        const day = new Date(p.date + "T00:00:00").toLocaleDateString(undefined, {
+        const day = new Date(p.ymd + "T00:00:00").toLocaleDateString(undefined, {
           weekday: "narrow",
         });
         return (

@@ -10,7 +10,7 @@ export type User = {
 };
 
 /** Daily rewards activity point (GET rewards/history/). */
-export type HistoryPoint = { date: string; points: number; count: number };
+export type HistoryPoint = { ymd: string; points: number; count: number };
 
 /** Per-set progress analytics (GET progress/me/). */
 export type ProgressAnalytics = {

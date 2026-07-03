@@ -18,6 +18,8 @@ import { Quiz } from "@/components/study/quiz";
 import { NotesReader } from "@/components/study/notes-reader";
 import { ReaderToolbar } from "@/components/study/reader-toolbar";
 import { LearningTreeGraph } from "@/components/study/learning-tree-graph";
+import { MarginNotes } from "@/components/study/margin-notes";
+import { SectionQuizModal } from "@/components/study/section-quiz-modal";
 import type { StudySet, StudySection, StudySetStatus } from "@/lib/types";
 
 /**
@@ -113,23 +115,54 @@ export default function StudySetPage({
   useStudyHeartbeat(set?.id, current ?? 0, sections[current ?? 0]?.title ?? "");
 
   // Mark a section complete locally AND record it server-side for analytics.
+  // Quiz results (when the completion came from "Quiz this section") ride
+  // along so accuracy lands in the activity log.
   const markSection = React.useCallback(
-    (i: number) => {
+    (i: number, results?: { correct: number; total: number }) => {
       const willComplete = !done.has(i);
-      toggle(i);
-      if (willComplete && set) {
+      if (willComplete || results) {
+        toggle(i);
+      }
+      if ((willComplete || results) && set) {
         api
           .post("progress/complete/", {
             studySetId: set.id,
             sectionIndex: i,
             sectionTitle: sections[i]?.title ?? "",
-            correct: 0,
-            total: 0,
+            correct: results?.correct ?? 0,
+            total: results?.total ?? 0,
           })
           .catch(() => {});
       }
     },
     [done, toggle, set, sections],
+  );
+
+  // "Quiz this section" modal + scroll target for auto-advance.
+  const [quizIndex, setQuizIndex] = React.useState<number | null>(null);
+  const sectionRefs = React.useRef<(HTMLDivElement | null)[]>([]);
+
+  const sectionQuestions = React.useCallback(
+    (i: number) => {
+      const title = sections[i]?.title ?? "";
+      return (set?.quiz ?? []).filter((q) => q.topic === title);
+    },
+    [set, sections],
+  );
+
+  const finishSectionQuiz = React.useCallback(
+    (i: number, r: { correct: number; total: number }) => {
+      markSection(i, r);
+      setQuizIndex(null);
+      const next = sectionRefs.current[i + 1];
+      if (next) {
+        setTimeout(
+          () => next.scrollIntoView({ behavior: "smooth", block: "start" }),
+          150,
+        );
+      }
+    },
+    [markSection],
   );
 
   if (loading) {
@@ -242,32 +275,62 @@ export default function StudySetPage({
           {sections.map((section, i) => {
             const isDone = done.has(i);
             return (
-              <Card key={i} className={cn(isDone && "border-green-500/40")}>
-                <CardContent className="p-6">
-                  <div className="mb-3 flex items-center justify-between gap-3">
-                    <h2 className="text-lg font-semibold">{section.title}</h2>
-                    <Button
-                      size="sm"
-                      variant={isDone ? "secondary" : "ghost"}
-                      onClick={() => markSection(i)}
+              <Card
+                key={i}
+                ref={(el) => {
+                  sectionRefs.current[i] = el;
+                }}
+                className={cn(
+                  "bg-paper overflow-hidden scroll-mt-24",
+                  isDone && "border-green-500/40",
+                )}
+              >
+                {/* notebook sheet: ruled lines + red margin; content sits
+                    right of the margin line */}
+                <CardContent className="notebook-sheet p-0">
+                  <div className="py-6 pl-16 pr-6">
+                    <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
+                      <h2 className="text-lg font-semibold leading-8">
+                        <span className="mr-2 text-muted-foreground/60">
+                          {i + 1}.
+                        </span>
+                        {section.title}
+                      </h2>
+                      <div className="flex items-center gap-1.5">
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          onClick={() => setQuizIndex(i)}
+                          className="bg-background/70"
+                        >
+                          <Sparkles className="h-4 w-4 text-primary" />
+                          Quiz this section
+                        </Button>
+                        <Button
+                          size="sm"
+                          variant={isDone ? "secondary" : "ghost"}
+                          onClick={() => markSection(i)}
+                          className={cn(
+                            "text-muted-foreground",
+                            isDone && "text-green-600",
+                          )}
+                        >
+                          <Check className="h-4 w-4" />
+                          {isDone ? "Reviewed" : "Got it"}
+                        </Button>
+                      </div>
+                    </div>
+                    <NotesReader
+                      content={section.content}
+                      storageKey={`${id}:s${i}`}
                       className={cn(
-                        "text-muted-foreground",
-                        isDone && "text-green-600",
+                        FONT_CLASS[reading.font],
+                        SIZE_CLASS[reading.size],
+                        "leading-8 text-foreground/90",
                       )}
-                    >
-                      <Check className="h-4 w-4" />
-                      {isDone ? "Reviewed" : "Got it"}
-                    </Button>
+                    />
+                    <MarginNotes storageKey={`${id}:s${i}`} />
                   </div>
-                  <NotesReader
-                    content={section.content}
-                    storageKey={`${id}:s${i}`}
-                    className={cn(
-                      FONT_CLASS[reading.font],
-                      SIZE_CLASS[reading.size],
-                      "text-foreground/90",
-                    )}
-                  />
                 </CardContent>
               </Card>
             );
@@ -324,6 +387,15 @@ export default function StudySetPage({
           <Quiz questions={set.quiz ?? []} studySetId={set.id} />
         </TabsContent>
       </Tabs>
+
+      {quizIndex != null && sections[quizIndex] && (
+        <SectionQuizModal
+          section={sections[quizIndex]}
+          questions={sectionQuestions(quizIndex)}
+          onClose={() => setQuizIndex(null)}
+          onComplete={(r) => finishSectionQuiz(quizIndex, r)}
+        />
+      )}
     </div>
   );
 }

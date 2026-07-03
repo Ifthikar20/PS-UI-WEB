@@ -45,17 +45,23 @@ export default function GameDetailPage({
         }
         setGame(found);
         // Load the chosen study set, or fall back to the most recent ready
-        // one so the game always launches with real questions to play.
+        // one that has the KIND of content this game plays on (word games
+        // need wordGame entries; the rest need quiz questions) — otherwise a
+        // word game can launch with a quiz-only set and sit unplayable.
         try {
           let set: StudySet | null = null;
           if (setId) {
             set = await api.get<StudySet>(`studysets/${setId}/`);
           } else {
+            const needsWords =
+              found.slug === "word-pop" || found.slug === "flashcard-sprint";
             const sets = await api.get<Paginated<StudySet>>(
               "studysets/?status=ready",
             );
             const ready = (sets.results ?? []).find(
-              (s) => s.status === "ready" && (s.quiz?.length || s.wordGame?.length),
+              (s) =>
+                s.status === "ready" &&
+                (needsWords ? (s.wordGame?.length ?? 0) >= 2 : s.quiz?.length),
             );
             if (ready) set = await api.get<StudySet>(`studysets/${ready.id}/`);
           }
