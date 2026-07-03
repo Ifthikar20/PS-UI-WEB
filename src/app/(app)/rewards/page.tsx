@@ -9,13 +9,13 @@ import { cn } from "@/lib/utils";
 
 // Rank ladder mirrored from the mobile app (lib/core/rewards/rewards_bloc.dart).
 const RANKS = [
-  { name: "Novice", emoji: "🌱", threshold: 0 },
-  { name: "Explorer", emoji: "🧭", threshold: 100 },
-  { name: "Scholar", emoji: "📖", threshold: 300 },
-  { name: "Strategist", emoji: "🧠", threshold: 600 },
-  { name: "Sage", emoji: "📚", threshold: 1000 },
-  { name: "Master", emoji: "🎓", threshold: 1500 },
-  { name: "Legend", emoji: "🏆", threshold: 2200 },
+  { name: "Novice", threshold: 0 },
+  { name: "Explorer", threshold: 100 },
+  { name: "Scholar", threshold: 300 },
+  { name: "Strategist", threshold: 600 },
+  { name: "Sage", threshold: 1000 },
+  { name: "Master", threshold: 1500 },
+  { name: "Legend", threshold: 2200 },
 ];
 
 export default function RewardsPage() {

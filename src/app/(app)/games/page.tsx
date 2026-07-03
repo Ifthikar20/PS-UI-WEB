@@ -14,8 +14,8 @@ export default function GamesPage() {
   return (
     <div className="mx-auto max-w-6xl space-y-6">
       <div className="flex items-center gap-3">
-        <span className="flex h-11 w-11 items-center justify-center rounded-xl bg-primary/10 text-2xl">
-          🕹️
+        <span className="flex h-11 w-11 items-center justify-center rounded-xl bg-primary/10">
+          <Gamepad2 className="h-6 w-6 text-primary" />
         </span>
         <div>
           <h1 className="text-2xl font-bold tracking-tight md:text-3xl">Arcade</h1>

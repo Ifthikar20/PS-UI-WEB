@@ -2,18 +2,18 @@
 
 import * as React from "react";
 import Link from "next/link";
-import { Gamepad2, Trophy, Play } from "lucide-react";
-import { coverGradient } from "@/lib/games";
+import { Trophy, Play } from "lucide-react";
 import { readBestScore } from "@/components/games/game-host";
+import { GamePoster } from "@/components/games/posters";
 import { GameControls } from "@/components/games/controls";
 import { cn } from "@/lib/utils";
 import type { GameManifestEntry } from "@/lib/types";
 
 /**
- * Arcade tile: big playable cover + what the game practices + your best score.
- * Framed as a practice station on a learning platform — the cover invites play
- * (large icon, hover lift + play affordance) and the meta row says what you'll
- * practice and the score to beat.
+ * Arcade tile: custom poster art + what the game practices + your best score.
+ * Framed as a practice station on a learning platform — the poster is a
+ * truthful preview of play (drawn from the game's own canvas art), and the
+ * meta row says what you'll practice and the score to beat.
  */
 export function GameCard({
   game,
@@ -39,27 +39,21 @@ export function GameCard({
   return (
     <Link href={href} className="group block">
       <div className="overflow-hidden rounded-2xl border bg-card shadow-sm transition-all duration-200 group-hover:-translate-y-1 group-hover:border-primary/40 group-hover:shadow-lg">
-        {/* CRT cover */}
-        <div
-          className="relative aspect-[4/3] w-full"
-          style={{ backgroundImage: coverGradient(game.coverColors) }}
-        >
-          {/* scanlines */}
+        {/* poster cover */}
+        <div className="relative aspect-[4/3] w-full overflow-hidden">
+          <div className="h-full w-full transition-transform duration-300 group-hover:scale-[1.04]">
+            <GamePoster slug={game.slug} coverColors={game.coverColors} />
+          </div>
+          {/* scanlines keep the retro-cabinet feel */}
           <div
-            className="pointer-events-none absolute inset-0 opacity-30"
+            className="pointer-events-none absolute inset-0 opacity-20"
             style={{
               backgroundImage:
                 "repeating-linear-gradient(0deg, rgba(0,0,0,.25) 0px, rgba(0,0,0,.25) 1px, transparent 1px, transparent 3px)",
             }}
           />
           {/* vignette */}
-          <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(120%_120%_at_50%_0%,transparent_55%,rgba(0,0,0,.28))]" />
-          {/* big game icon — the star of the tile */}
-          <div className="absolute inset-0 flex items-center justify-center">
-            <span className="text-6xl drop-shadow-[0_3px_10px_rgba(0,0,0,.4)] transition-transform duration-200 group-hover:scale-110 md:text-7xl">
-              {game.emoji ?? <Gamepad2 className="h-14 w-14 text-white" />}
-            </span>
-          </div>
+          <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(120%_120%_at_50%_0%,transparent_60%,rgba(0,0,0,.25))]" />
           {/* hover play affordance */}
           <div className="absolute inset-x-0 bottom-2 flex justify-center opacity-0 transition-opacity duration-200 group-hover:opacity-100">
             <span className="inline-flex items-center gap-1.5 rounded-full bg-black/55 px-3 py-1 text-xs font-semibold text-white backdrop-blur">

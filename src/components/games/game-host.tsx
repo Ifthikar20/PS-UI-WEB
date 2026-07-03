@@ -5,6 +5,7 @@ import Link from "next/link";
 import { RotateCcw, Gamepad2, BookOpen, Trophy, Star, Zap } from "lucide-react";
 import { api } from "@/lib/api";
 import { gameBundleUrl, payloadFromStudySet } from "@/lib/games";
+import { GamePoster } from "@/components/games/posters";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import type { GameManifestEntry, StudySet } from "@/lib/types";
@@ -233,9 +234,15 @@ export function GameHost({
         {status === "over" && (
           <div className="absolute inset-0 z-10 flex items-center justify-center bg-black/70 p-6 backdrop-blur-sm">
             <div className="w-full max-w-md rounded-3xl border bg-card p-8 text-center shadow-2xl">
-              <div className="mx-auto mb-3 flex h-16 w-16 items-center justify-center rounded-2xl bg-primary/10 text-4xl">
-                {newBest ? "🏆" : (game.emoji ?? "🎮")}
-              </div>
+              {newBest ? (
+                <div className="mx-auto mb-3 flex h-16 w-16 items-center justify-center rounded-2xl bg-accent-2/10">
+                  <Trophy className="h-8 w-8 text-accent-2" />
+                </div>
+              ) : (
+                <div className="mx-auto mb-3 h-16 w-24 overflow-hidden rounded-xl border">
+                  <GamePoster slug={game.slug} coverColors={game.coverColors} />
+                </div>
+              )}
               <h2 className="text-xl font-bold">
                 {newBest ? "New personal best!" : `Round ${round} complete`}
               </h2>

@@ -2,8 +2,20 @@
 
 import * as React from "react";
 import { useRouter } from "next/navigation";
-import { ArrowRight, ArrowLeft, Check } from "lucide-react";
+import {
+  ArrowRight,
+  ArrowLeft,
+  Check,
+  School,
+  BookOpen,
+  GraduationCap,
+} from "lucide-react";
 import { Pip } from "@/components/pip";
+import {
+  NotesGlyph,
+  BirdGlyph,
+  TrophyGlyph,
+} from "@/components/marketing/glyphs";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
@@ -26,36 +38,40 @@ const LEVELS: {
   value: EduLevel;
   title: string;
   sub: string;
-  emoji: string;
-  tile: string; // emoji tile background
+  Icon: typeof School;
+  tile: string; // icon tile styling
 }[] = [
   {
     value: "school",
     title: "High school or younger",
     sub: "Bright, playful, and game-first.",
-    emoji: "🎈",
-    tile: "bg-violet-500/15",
+    Icon: School,
+    tile: "bg-violet-500/15 text-violet-500",
   },
   {
     value: "college",
     title: "College",
     sub: "Clean and focused, with a study timer.",
-    emoji: "🎯",
-    tile: "bg-primary/15",
+    Icon: BookOpen,
+    tile: "bg-primary/15 text-primary",
   },
   {
     value: "university",
     title: "University & above",
     sub: "A refined, professional workspace.",
-    emoji: "🎓",
-    tile: "bg-amber-500/15",
+    Icon: GraduationCap,
+    tile: "bg-amber-500/15 text-amber-600",
   },
 ];
 
-const VALUE_PROPS: { emoji: string; title: string; sub: string }[] = [
-  { emoji: "📚", title: "Notes in", sub: "Paste notes, links, or PDFs" },
-  { emoji: "🎮", title: "Games out", sub: "Your material becomes the arcade" },
-  { emoji: "🏆", title: "Progress up", sub: "Scores, streaks, and ranks" },
+const VALUE_PROPS: {
+  Icon: (p: { className?: string }) => React.JSX.Element;
+  title: string;
+  sub: string;
+}[] = [
+  { Icon: NotesGlyph, title: "Notes in", sub: "Paste notes, links, or PDFs" },
+  { Icon: BirdGlyph, title: "Games out", sub: "Your material becomes the arcade" },
+  { Icon: TrophyGlyph, title: "Progress up", sub: "Scores, streaks, and ranks" },
 ];
 
 export default function OnboardingPage() {
@@ -117,7 +133,9 @@ export default function OnboardingPage() {
           <div className="mt-6 grid gap-3 sm:grid-cols-3">
             {VALUE_PROPS.map((v) => (
               <div key={v.title} className="rounded-2xl border bg-background p-4">
-                <div className="text-3xl">{v.emoji}</div>
+                <span className="inline-flex h-10 w-10 items-center justify-center rounded-xl bg-primary/10">
+                  <v.Icon className="h-6 w-6 text-primary" />
+                </span>
                 <div className="mt-2 font-semibold">{v.title}</div>
                 <div className="mt-0.5 text-xs text-muted-foreground">{v.sub}</div>
               </div>
@@ -155,11 +173,11 @@ export default function OnboardingPage() {
                   <div className="flex items-start justify-between">
                     <span
                       className={cn(
-                        "flex h-16 w-16 items-center justify-center rounded-2xl text-4xl transition-transform group-hover:scale-110",
+                        "flex h-16 w-16 items-center justify-center rounded-2xl transition-transform group-hover:scale-110",
                         l.tile,
                       )}
                     >
-                      {l.emoji}
+                      <l.Icon className="h-8 w-8" />
                     </span>
                     {selected && (
                       <span className="flex h-6 w-6 items-center justify-center rounded-full bg-primary text-primary-foreground">
@@ -204,7 +222,16 @@ export default function OnboardingPage() {
                   )}
                 >
                   <div className="flex items-center justify-between">
-                    <span className="text-4xl">{meta.emoji}</span>
+                    <span className="flex -space-x-2">
+                      <span
+                        className="h-8 w-8 rounded-full ring-2 ring-card"
+                        style={{ backgroundColor: meta.swatch[0] }}
+                      />
+                      <span
+                        className="h-8 w-8 rounded-full ring-2 ring-card"
+                        style={{ backgroundColor: meta.swatch[1] }}
+                      />
+                    </span>
                     {selected && (
                       <span className="flex h-6 w-6 items-center justify-center rounded-full bg-primary text-primary-foreground">
                         <Check className="h-4 w-4" />

@@ -17,27 +17,32 @@ export type EduLevel = "school" | "college" | "university";
 
 export const FLAVOR_META: Record<
   Flavor,
-  { label: string; blurb: string; emoji: string }
+  {
+    label: string;
+    blurb: string;
+    /** The flavor's primary + accent, for swatch previews (from design tokens). */
+    swatch: [string, string];
+  }
 > = {
   playful: {
     label: "Playful",
     blurb: "Colorful and game-first — great for younger learners.",
-    emoji: "🎈",
+    swatch: ["#7C5CFB", "#FB8A1C"],
   },
   focus: {
     label: "Focus",
     blurb: "Clean and stat-forward with a study timer up top.",
-    emoji: "🎯",
+    swatch: ["#6B5CE7", "#F7941D"],
   },
   pro: {
     label: "Pro",
     blurb: "Refined and professional for university and beyond.",
-    emoji: "🎓",
+    swatch: ["#414BB4", "#BC7F38"],
   },
   rose: {
     label: "Rose",
     blurb: "The Focus layout in a softer pink palette.",
-    emoji: "🌸",
+    swatch: ["#EC4899", "#A06CE4"],
   },
 };
 

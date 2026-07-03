@@ -81,7 +81,16 @@ export default function SettingsPage() {
                     active && "border-primary ring-1 ring-primary",
                   )}
                 >
-                  <span className="text-2xl">{meta.emoji}</span>
+                  <span className="flex -space-x-1.5 pt-1">
+                    <span
+                      className="h-5 w-5 rounded-full ring-2 ring-card"
+                      style={{ backgroundColor: meta.swatch[0] }}
+                    />
+                    <span
+                      className="h-5 w-5 rounded-full ring-2 ring-card"
+                      style={{ backgroundColor: meta.swatch[1] }}
+                    />
+                  </span>
                   <span className="flex-1">
                     <span className="flex items-center gap-2 font-semibold">
                       {meta.label}
