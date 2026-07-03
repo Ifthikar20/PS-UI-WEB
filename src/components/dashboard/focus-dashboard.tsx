@@ -1,7 +1,8 @@
 "use client";
 
 import Link from "next/link";
-import { Plus, FileText, Trophy, Flame, Star } from "lucide-react";
+import { Plus, FileText } from "lucide-react";
+import { DoodleStar, DoodleFlame, DoodleTrophy } from "@/components/doodles";
 import { useSession } from "@/components/app/session-provider";
 import { asList } from "@/lib/use-api";
 import type { GameManifestEntry } from "@/lib/types";
@@ -59,17 +60,17 @@ export function FocusDashboard() {
 
       <div className="grid gap-4 sm:grid-cols-3">
         <StatTile
-          icon={<Star className="h-5 w-5" />}
+          icon={<DoodleStar className="h-7 w-7" />}
           label="Points"
           value={rewards ? rewards.points.toLocaleString() : "—"}
         />
         <StatTile
-          icon={<Flame className="h-5 w-5" />}
+          icon={<DoodleFlame className="h-7 w-7" />}
           label="Day streak"
           value={rewards ? String(rewards.streak) : "—"}
         />
         <StatTile
-          icon={<Trophy className="h-5 w-5" />}
+          icon={<DoodleTrophy className="h-7 w-7" />}
           label="Rank"
           value={rewards ? rewards.rank.name : "—"}
         />

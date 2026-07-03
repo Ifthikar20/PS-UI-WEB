@@ -1,6 +1,6 @@
 "use client";
 
-import { Flame, Star } from "lucide-react";
+import { DoodleStar, DoodleFlame } from "@/components/doodles";
 import { useSession } from "@/components/app/session-provider";
 import { Card, CardContent } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
@@ -38,7 +38,7 @@ export default function RewardsPage() {
         <Card>
           <CardContent className="flex items-center gap-4 p-6">
             <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-secondary">
-              <Star className="h-6 w-6" />
+              <DoodleStar className="h-8 w-8" />
             </div>
             <div>
               <div className="text-sm text-muted-foreground">Total points</div>
@@ -51,7 +51,7 @@ export default function RewardsPage() {
         <Card>
           <CardContent className="flex items-center gap-4 p-6">
             <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-secondary">
-              <Flame className="h-6 w-6" />
+              <DoodleFlame className="h-8 w-8" />
             </div>
             <div>
               <div className="text-sm text-muted-foreground">Day streak</div>

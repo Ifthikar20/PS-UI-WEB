@@ -1,7 +1,7 @@
 "use client";
 
 import * as React from "react";
-import { Clock, Target, CheckCircle2 } from "lucide-react";
+import { DoodleClock, DoodleTarget, DoodleCheck } from "@/components/doodles";
 import { useApi } from "@/lib/use-api";
 import { Card, CardContent } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -45,18 +45,18 @@ export function ActivityOverview() {
 
       <div className="grid gap-4 lg:grid-cols-3">
         <Stat
-          icon={<Clock className="h-5 w-5" />}
+          icon={<DoodleClock className="h-7 w-7" />}
           label="Time studied"
           value={loading ? "—" : fmtDuration(totalSeconds)}
           hint="last 2 weeks tracked"
         />
         <Stat
-          icon={<CheckCircle2 className="h-5 w-5" />}
+          icon={<DoodleCheck className="h-7 w-7" />}
           label="Sections completed"
           value={loading ? "—" : String(sectionsCompleted)}
         />
         <Stat
-          icon={<Target className="h-5 w-5" />}
+          icon={<DoodleTarget className="h-7 w-7" />}
           label="Avg accuracy"
           value={loading ? "—" : avgAccuracy == null ? "—" : `${avgAccuracy}%`}
           accent

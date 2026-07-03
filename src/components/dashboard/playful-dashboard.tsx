@@ -1,7 +1,8 @@
 "use client";
 
 import Link from "next/link";
-import { Plus, FileText, Flame, Star, Sparkles } from "lucide-react";
+import { Plus, FileText, Sparkles } from "lucide-react";
+import { DoodleStar, DoodleFlame } from "@/components/doodles";
 import { useSession } from "@/components/app/session-provider";
 import { asList } from "@/lib/use-api";
 import type { GameManifestEntry } from "@/lib/types";
@@ -58,7 +59,7 @@ export function PlayfulDashboard() {
       <div className="grid gap-4 sm:grid-cols-3">
         <Card className="border-none bg-pastel-lime text-black">
           <CardContent className="flex items-center gap-4 p-6">
-            <Star className="h-8 w-8" />
+            <DoodleStar className="h-10 w-10" />
             <div>
               <div className="text-sm">Points</div>
               <div className="text-2xl font-extrabold">
@@ -69,7 +70,7 @@ export function PlayfulDashboard() {
         </Card>
         <Card className="border-none bg-pastel-peach text-black">
           <CardContent className="flex items-center gap-4 p-6">
-            <Flame className="h-8 w-8" />
+            <DoodleFlame className="h-10 w-10" />
             <div>
               <div className="text-sm">Streak</div>
               <div className="text-2xl font-extrabold">
