@@ -13,6 +13,7 @@ const PROTECTED = [
   "/study",
   "/games",
   "/exam",
+  "/activity",
   "/rewards",
   "/profile",
   "/settings",

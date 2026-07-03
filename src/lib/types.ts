@@ -193,3 +193,32 @@ export type Paginated<T> = {
   previous: string | null;
   results: T[];
 };
+
+/** progress/activity/ — timestamped analytics for the Activity page. */
+export type ActivityAnalytics = {
+  days: number;
+  daily: {
+    date: string;
+    seconds: number;
+    correct: number;
+    total: number;
+    events: number;
+  }[];
+  hourlySeconds: number[];
+  totals: {
+    seconds: number;
+    activeDays: number;
+    avgSecondsPerActiveDay: number;
+    accuracyPct: number | null;
+    answered: number;
+    sectionsCompleted: number;
+  };
+  recent: {
+    kind: "heartbeat" | "section" | "quiz";
+    studySetTitle: string;
+    seconds: number;
+    correct: number;
+    total: number;
+    createdAt: string;
+  }[];
+};

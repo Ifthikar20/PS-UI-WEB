@@ -67,7 +67,12 @@ export function ActivityOverview() {
         <CardContent className="p-6">
           <div className="mb-4 flex items-center justify-between">
             <span className="text-sm font-medium">Daily activity</span>
-            <span className="text-xs text-muted-foreground">last 14 days</span>
+            <a
+              href="/activity"
+              className="text-xs text-muted-foreground hover:text-foreground"
+            >
+              Full activity →
+            </a>
           </div>
           {loading ? (
             <Skeleton className="h-32 w-full" />
