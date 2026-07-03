@@ -7,7 +7,12 @@ import { ArrowLeft, Gamepad2, Check, Loader2, Sparkles } from "lucide-react";
 import { api, ApiError } from "@/lib/api";
 import { Progress } from "@/components/ui/progress";
 import { useStudyHeartbeat } from "@/lib/use-heartbeat";
-import { useSyncedReading, FONT_CLASS, SIZE_CLASS } from "@/lib/reading";
+import {
+  useSyncedReading,
+  FONT_CLASS,
+  SIZE_CLASS,
+  PAPER_CLASS,
+} from "@/lib/reading";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -248,7 +253,7 @@ export default function StudySetPage({
       <Tabs defaultValue="read">
         <TabsList>
           <TabsTrigger value="read">Read</TabsTrigger>
-          <TabsTrigger value="path">Path</TabsTrigger>
+          <TabsTrigger value="path">Learning tree</TabsTrigger>
           <TabsTrigger value="quiz">Quiz ({set.quiz?.length ?? 0})</TabsTrigger>
         </TabsList>
 
@@ -274,6 +279,7 @@ export default function StudySetPage({
 
           {sections.map((section, i) => {
             const isDone = done.has(i);
+            const paper = PAPER_CLASS[reading.paper];
             return (
               <Card
                 key={i}
@@ -281,14 +287,15 @@ export default function StudySetPage({
                   sectionRefs.current[i] = el;
                 }}
                 className={cn(
-                  "bg-paper overflow-hidden scroll-mt-24",
+                  "overflow-hidden scroll-mt-24",
+                  paper.card,
                   isDone && "border-green-500/40",
                 )}
               >
-                {/* notebook sheet: ruled lines + red margin; content sits
-                    right of the margin line */}
-                <CardContent className="notebook-sheet p-0">
-                  <div className="py-6 pl-16 pr-6">
+                {/* paper sheet: style picked in the toolbar (ruled with a red
+                    margin, graph grid, plain warm paper, or pure white) */}
+                <CardContent className={cn("p-0", paper.sheet)}>
+                  <div className={paper.pad}>
                     <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
                       <h2 className="text-lg font-semibold leading-8">
                         <span className="mr-2 text-muted-foreground/60">

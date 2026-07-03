@@ -176,6 +176,19 @@
       linear-gradient(to right, transparent 2.75rem, hsl(0 50% 55% / 0.35) 2.75rem, hsl(0 50% 55% / 0.35) calc(2.75rem + 1.5px), transparent calc(2.75rem + 1.5px)),
       repeating-linear-gradient(to bottom, transparent 0, transparent calc(2rem - 1px), hsl(210 30% 45% / 0.28) calc(2rem - 1px), hsl(210 30% 45% / 0.28) 2rem);
   }
+  /* Graph paper: a fine square grid — the "mathematical" sheet. */
+  .notebook-grid {
+    background-image:
+      linear-gradient(to right, hsl(210 50% 60% / 0.22) 1px, transparent 1px),
+      linear-gradient(to bottom, hsl(210 50% 60% / 0.22) 1px, transparent 1px);
+    background-size: 1.5rem 1.5rem;
+  }
+  .dark .notebook-grid {
+    background-image:
+      linear-gradient(to right, hsl(210 30% 50% / 0.18) 1px, transparent 1px),
+      linear-gradient(to bottom, hsl(210 30% 50% / 0.18) 1px, transparent 1px);
+    background-size: 1.5rem 1.5rem;
+  }
   /* Soft brand wash used on hero/promo surfaces */
   .brand-wash {
     background-image: radial-gradient(
