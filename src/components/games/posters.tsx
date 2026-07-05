@@ -335,7 +335,58 @@ function FlashcardPoster() {
   );
 }
 
+function AnswerBucketPoster() {
+  return (
+    <svg viewBox="0 0 400 300" className="h-full w-full" preserveAspectRatio="xMidYMid slice" aria-hidden>
+      <defs>
+        <radialGradient id="ab-bg" cx="0.5" cy="0" r="1.1">
+          <stop offset="0" stopColor="#7D6FF0" />
+          <stop offset="0.5" stopColor="#6B5CE7" />
+          <stop offset="1" stopColor="#1F1B2E" />
+        </radialGradient>
+        <linearGradient id="ab-body" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0" stopColor="#FFB454" />
+          <stop offset="1" stopColor="#EF7F12" />
+        </linearGradient>
+      </defs>
+      <rect width="400" height="300" fill="url(#ab-bg)" />
+      {/* soft glow blobs */}
+      <g opacity="0.4">
+        <circle cx="70" cy="70" r="60" fill="#8B7BFF" />
+        <circle cx="340" cy="120" r="52" fill="#F7941D" opacity="0.7" />
+      </g>
+      {/* falling answer tiles — wrong ones tilted, the correct one marked ✓ */}
+      <g fontFamily="system-ui, sans-serif" fontWeight="800">
+        <g transform="translate(88 70) rotate(-8)">
+          <rect x="-40" y="-22" width="80" height="44" rx="12" fill="#FFFFFF" opacity="0.9" />
+          <text x="0" y="7" textAnchor="middle" fontSize="20" fill="#EF4444">✗</text>
+        </g>
+        <g transform="translate(300 96) rotate(7)">
+          <rect x="-40" y="-22" width="80" height="44" rx="12" fill="#FFFFFF" opacity="0.9" />
+          <text x="0" y="7" textAnchor="middle" fontSize="20" fill="#EF4444">✗</text>
+        </g>
+        {/* the correct tile, dropping toward the bucket */}
+        <g transform="translate(196 150) rotate(-2)">
+          <rect x="-46" y="-26" width="92" height="52" rx="14" fill="#D6F26C" stroke="#fff" strokeWidth="3" />
+          <text x="0" y="8" textAnchor="middle" fontSize="26" fill="#1F7A34">✓</text>
+        </g>
+      </g>
+      {/* motion streak under the correct tile */}
+      <path d="M196 176 V212" stroke="#D6F26C" strokeWidth="4" strokeLinecap="round" opacity="0.5" strokeDasharray="2 9" />
+      {/* the bucket */}
+      <g transform="translate(200 236)">
+        <ellipse cx="0" cy="-10" rx="66" ry="16" fill="#FFFFFF" opacity="0.18" />
+        <path d="M-58 -10 L58 -10 L42 58 Q40 64 32 64 L-32 64 Q-40 64 -42 58 Z"
+          fill="url(#ab-body)" stroke="#2A1C05" strokeWidth="4" strokeLinejoin="round" />
+        <path d="M-38 -8 L-44 62 M0 -8 L0 64 M38 -8 L44 62" stroke="#2A1C05" strokeWidth="3" opacity="0.28" />
+        <ellipse cx="0" cy="-10" rx="60" ry="13" fill="#FFD38A" stroke="#2A1C05" strokeWidth="4" />
+      </g>
+    </svg>
+  );
+}
+
 export const GAME_POSTERS: Record<string, () => React.JSX.Element> = {
+  "answer-bucket": AnswerBucketPoster,
   flappy: FlappyPoster,
   "space-shooter": ShooterPoster,
   "quiz-rush": QuizRushPoster,

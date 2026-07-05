@@ -57,6 +57,10 @@ export type GameControl = { keys: string[]; action: string };
  * layer maps them to each game's on-screen actions); click/tap always works too.
  */
 export const GAME_CONTROLS: Record<string, GameControl[]> = {
+  "answer-bucket": [
+    { keys: ["←", "→"], action: "Move bucket" },
+    { keys: ["Drag"], action: "Aim" },
+  ],
   "quiz-rush": [
     { keys: ["1", "2", "3", "4"], action: "Pick answer" },
     { keys: ["Enter"], action: "Play again" },
